@@ -1,0 +1,12 @@
+---
+description: GitHub Issues — gh CLI, labels, and triage boundaries
+alwaysApply: true
+---
+
+# GitHub Issues
+
+- Use `gh` for all GitHub issue operations — never the web UI or undocumented APIs.
+- Use only the label vocabulary in `.agents/docs/triage-labels.md`.
+- External PRs are not a triage surface — do not treat them as issues to label or groom.
+- When a skill says "publish to the issue tracker", create a GitHub issue via `gh issue create`.
+- Full command reference: `.agents/docs/issue-tracker.md`.

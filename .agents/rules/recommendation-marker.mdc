@@ -1,0 +1,11 @@
+---
+description: Mark recommended options visually with a star
+alwaysApply: true
+---
+
+# Recommendation Marker
+
+- Whenever you recommend an option, choice, or course of action, mark it with a star emoji (⭐) so it stands out visually.
+- Put the ⭐ at the start of the recommended item, e.g. `⭐ Use Postgres` or label it `(⭐ Recommended)`.
+- Only the recommended option gets the star — never star the non-recommended alternatives.
+- When presenting multiple options, still mark exactly one as the ⭐ recommendation unless you genuinely have no preference.

@@ -1,0 +1,10 @@
+---
+description: Project language — English for all artifacts and CLI output
+alwaysApply: true
+---
+
+# Project Language
+
+- All project artifacts are written in English: source code, comments, commit messages, documentation, glossary/ADRs, and the CLI's user-facing output.
+- Chat conversation may be in any language; this rule governs committed artifacts and shipped output, not the conversation.
+- i18n is out of scope — English is the single base language.

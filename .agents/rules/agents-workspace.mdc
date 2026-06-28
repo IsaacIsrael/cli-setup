@@ -1,0 +1,13 @@
+---
+description: Agent workspace — keep agent docs under .agents/, AGENTS.md at repo root
+alwaysApply: true
+---
+
+# Agent Workspace
+
+- `AGENTS.md` at the repo root is the always-on index — edit it there.
+- All other agent skills, rules, docs, and configuration live under `.agents/`.
+- Do not create new agent guidance at the repo root — use `.agents/skills/`, `.agents/rules/`, or `.agents/docs/`.
+- `.cursor/rules/*.mdc` are symlinks to `.agents/rules/` — edit files in `.agents/rules/`.
+- Application source lives in `src/`; application domain docs (`CONTEXT.md`, `adr/`) live under `.agents/docs/`.
+- Ephemeral runtime artifacts (e.g. the `teach` workspace) live in the gitignored `.scratch/` — never committed, never under `.agents/`. See ADR 0007.

@@ -1,0 +1,15 @@
+---
+description: Git safety — commits, pushes, and destructive operations
+alwaysApply: true
+---
+
+# Git Safety
+
+- Never commit unless the user explicitly asks.
+- Never push unless the user explicitly asks.
+- Never update git config.
+- Never run destructive git commands (`push --force`, `reset --hard`, etc.) unless the user explicitly requests them.
+- Never skip hooks (`--no-verify`, `--no-gpg-sign`) unless the user explicitly requests it.
+- Never force-push to `main` or `master` — warn the user instead.
+- Avoid `git commit --amend` unless all three hold: the user requested amend, HEAD was created by you this session, and the commit has not been pushed.
+- If a commit fails or is rejected by a hook, fix the issue and create a new commit — never amend a failed commit.
