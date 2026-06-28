@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a new capability or improvement for cli-setup
+title: "feat: "
+labels:
+  - enhancement
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the suggestion! Describe the problem you're trying to solve
+        first — that helps us find the best solution, which may differ from the
+        one you have in mind.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What are you trying to do, and what gets in the way today?
+      placeholder: As a developer, I want to ... so that ...
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What would you like cli-setup to do?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches or workarounds you've thought about.
+    validations:
+      required: false
+  - type: input
+    id: scope
+    attributes:
+      label: Profile / command
+      description: Which profile or command does this relate to (e.g. `mobile`, `doctor`)?
+    validations:
+      required: false
