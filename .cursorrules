@@ -1,0 +1,19 @@
+# EXCEPTION to the agents-workspace rule (no agent guidance at the repo root).
+# This file exists only because Cursor's Source Control "Generate commit
+# message" flow does NOT read `.cursor/rules/` — the legacy `.cursorrules`
+# file is the only surface it respects. Keep its scope limited to commit
+# message generation; all other agent guidance stays under `.agents/`.
+# Source of truth for the rule: .agents/rules/conventional-commits.mdc
+
+When generating a Git commit message, follow Conventional Commits 1.0.0
+(https://www.conventionalcommits.org/en/v1.0.0/):
+
+- Subject line: `<type>[optional scope]: <description>` — lowercase type,
+  imperative description, no trailing period, ideally <= 72 chars.
+- Use `feat` for new behavior, `fix` for bug fixes. Other allowed types:
+  `build`, `chore`, `ci`, `docs`, `refactor`, `perf`, `style`, `test`.
+- Optional scope in parentheses when it clarifies the area, e.g. `feat(cli):`.
+- Put rationale or context in the body after a blank line; explain the why.
+- Breaking changes: append `!` before the colon (`feat!:`) and/or add a
+  `BREAKING CHANGE:` footer.
+- Reference issues in footers when relevant, e.g. `Refs: #123`.
