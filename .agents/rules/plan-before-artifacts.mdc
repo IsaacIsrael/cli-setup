@@ -1,0 +1,16 @@
+---
+description: Grill before substantial artifacts — plan mode + /grill-with-docs
+alwaysApply: true
+---
+
+# Plan Before Substantial Artifacts
+
+STOP before generating a substantial new artifact — a new feature, a new doc/ADR/design, a new image, or any net-new file that represents real design work. Do NOT write it yet. First, in order:
+
+1. Switch to plan mode (`SwitchMode` → `plan`).
+2. Run the `/grill-with-docs` skill to stress-test the design and capture the glossary/ADRs as we go.
+3. Only after the plan is agreed, generate the artifact.
+
+If you catch yourself about to create such a file without having done the above, stop and do it now.
+
+Exempt — proceed normally, no ceremony: trivial edits to existing files (small fixes, renames, formatting, one-line changes).
