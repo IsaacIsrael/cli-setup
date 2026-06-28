@@ -1,0 +1,25 @@
+---
+description: Commit messages — Conventional Commits format
+alwaysApply: true
+---
+
+# Conventional Commits
+
+When creating a commit message (including when the user asks), use [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
+
+- Subject line: `<type>[optional scope]: <description>` — lowercase type, imperative description, no trailing period.
+- Use `feat` for new behavior, `fix` for bug fixes. Other allowed types: `build`, `chore`, `ci`, `docs`, `refactor`, `perf`, `style`, `test`.
+- Optional scope in parentheses when it clarifies the area, e.g. `feat(cli):`.
+- Put rationale or context in the body after a blank line; keep the subject concise.
+- Breaking changes: append `!` before the colon (`feat!:` or `feat(api)!:`) and/or add a `BREAKING CHANGE:` footer.
+- Reference issues in footers when relevant, e.g. `Refs: #123`.
+
+## Commit granularity
+
+Make **meaningful, atomic commits** — never dump unrelated changes into one blob.
+
+- One logical change per commit: each commit should stand on its own, build/pass, and be revertable in isolation.
+- Split work along natural seams (e.g. docs, config, a feature, a fix) rather than by file count or chronology.
+- Don't mix refactors with behavior changes, or unrelated fixes with a feature — separate commits.
+- The subject says **what**; the body says **why** (rationale, trade-offs, context) — not a restatement of the diff.
+- Prefer several small, reviewable commits over one large one; group only changes that truly belong together.

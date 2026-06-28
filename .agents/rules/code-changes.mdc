@@ -1,0 +1,12 @@
+---
+description: Code change scope — minimal diffs, conventions, and artifacts
+alwaysApply: true
+---
+
+# Code Changes
+
+- Change only what the task requires — no drive-by refactors or unrelated edits.
+- Read surrounding code before writing; match its naming, types, and abstractions.
+- Do not add tests unless the user asks or they cover real behavior worth asserting.
+- Do not create markdown files the user did not ask for.
+- Do not add comments that restate what the code already says — only non-obvious logic.
