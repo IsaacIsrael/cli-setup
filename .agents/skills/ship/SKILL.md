@@ -33,27 +33,9 @@ Done when every criterion has a met/unmet verdict backed by diff evidence.
 
 ### 4. Open or update the PR
 
-Push the branch, then detect whether a PR already exists for it: `gh pr view --json number,state,isDraft` (or `gh pr list --head <branch>`). The push already updated the diff either way; the two cases differ only in whether you create the PR or adjust the existing one.
+Run `/open-pr` with the pinned base, passing the draft/ready decision from step 3's verdicts. `/open-pr` owns the PR mechanics — push, template, create-vs-update, and state transitions:
 
-**No PR yet — create it** with `gh pr create`, filling `.github/PULL_REQUEST_TEMPLATE.md`:
+- **All criteria met** → ready.
+- **Any criterion unmet** → draft, and hand `/open-pr` the unmet criteria so it surfaces them under "Notes for reviewers", calling out any criterion that **regressed** (was met, now unmet).
 
-- **Title** — `[Type] description`, where `Type` is a Git Flow type with its first letter uppercase (`Feature`, `Bugfix`, `Release`, `Hotfix`) matching the branch prefix. Start the description with a capital letter, and wrap commands, file names, and identifiers in `` `backticks` ``, e.g. ``[Feature] Add `doctor` command``.
-- **Summary** — the why + narrative: why the PR exists and the story of the change. Keep it to motivation/context, not a deliverables list (those belong under "What this PR generates").
-- **What this PR generates** — the deliverables/outcomes: what exists after this merges (distinct from the Summary's why). Product-focused bullet points in general terms (e.g. adds a command, updates the docs, establishes future docs structure), not a file list.
-- **Test plan** — a checklist split into two groups. Under "Automated / verified by the agent", list the steps you actually ran and check them (`- [x]`), each with the command and observed result. Under "Manual — for the reviewer to verify", list steps you could not run and leave them unchecked (`- [ ]`), each with the command and expected result.
-- **Notes for reviewers** — focus areas, trade-offs, follow-ups.
-- **Related issue** — `Closes #<n>` (last section).
-
-CI/CD runs the quality gates (`cog check`, `shellcheck`, `shfmt`, `shellspec`, Bash 3.2 compatibility), so do not restate them as a checklist in the PR body.
-
-Gate the new PR's state on the verdicts from step 3:
-
-- **All criteria met** → open a ready PR.
-- **Any criterion unmet** → open a **draft** PR (`--draft`) and list the unmet criteria under "Notes for reviewers" so the gap is visible.
-
-**PR already exists — update it, never recreate.** The push above is the update; **preserve the existing body** (do not overwrite manual edits). Then adjust the draft/ready state from the step-3 verdicts, **bidirectionally**:
-
-- **All criteria met** → promote to ready (`gh pr ready <n>`).
-- **Any criterion unmet** → demote to draft (`gh pr ready --undo <n>`) and **warn prominently**, calling out any criterion that **regressed** (was met, now unmet).
-
-Return the PR URL.
+Return the PR URL it reports.

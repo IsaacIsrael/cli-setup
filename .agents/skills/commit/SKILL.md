@@ -22,7 +22,7 @@ Message format and commit granularity follow [conventional-commits.mdc](../../ru
 
 ### 2. Fix the rewrite boundary
 
-Resolve the base branch from the Git Flow prefix per [branch-issue-resolution.md](../../docs/branch-issue-resolution.md). The **rewritable set** is the commits in `git log <base>..HEAD` that are exclusive to this branch: for each candidate, `git branch -a --contains <sha>` must list only this branch and its own remote-tracking ref. Any commit also reachable from the base or another branch — or any case where exclusivity cannot be proven — is off-limits.
+Resolve the base branch per [branch-issue-resolution.md](../../docs/branch-issue-resolution.md) (trunk-based: always `main`). The **rewritable set** is the commits in `git log <base>..HEAD` that are exclusive to this branch: for each candidate, `git branch -a --contains <sha>` must show no other local or remote branch — before the first push, the current branch alone is sufficient evidence. Any commit also reachable from the base or another branch — or any case where exclusivity cannot be proven — is off-limits.
 
 ### 3. Decide absorb vs. new — per group
 

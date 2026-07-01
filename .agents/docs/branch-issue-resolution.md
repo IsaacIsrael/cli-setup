@@ -16,14 +16,14 @@ Fetch the resolved issue with `gh issue view <n> --comments` (see [issue-tracker
 
 ## Resolve the base branch
 
-The base is the branch this work merges into. Honor an explicit base argument if the caller passed one; otherwise derive it from the Git Flow branch prefix:
+The base is the branch this work merges into. Development is **trunk-based on a
+single `main`** (there is no separate integration branch), so **every branch
+targets the default branch (`main`)**. Honor an explicit base argument if the
+caller passed one; otherwise default to the repository's default branch.
 
-| Current branch prefix   | Base branch        |
-| ----------------------- | ------------------ |
-| `feature/*`, `bugfix/*` | the integration branch |
-| `release/*`, `hotfix/*` | the default branch |
-
-Default to the repository's default branch when the prefix is unknown or absent.
+The branch prefix stays functional beyond base resolution — the CI merge router
+reads it: `hotfix/*` auto-publishes a patch release on merge, while `feature/*`
+and `bugfix/*` accumulate into the draft Release (see [ADR 0010](adr/0010-ci-cd-strategy.md)).
 
 ## Confirm before proceeding
 
