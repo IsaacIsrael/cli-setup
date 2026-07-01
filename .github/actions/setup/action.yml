@@ -1,0 +1,9 @@
+name: setup
+description: Install the cli-setup toolchain (placeholder; slice 4 adds brew bundle + Homebrew cache)
+runs:
+  using: composite
+  steps:
+    - name: Install toolchain (placeholder)
+      shell: bash
+      run: |
+        echo "setup placeholder - slice #4 adds 'brew bundle' from the Brewfile + Homebrew cache"

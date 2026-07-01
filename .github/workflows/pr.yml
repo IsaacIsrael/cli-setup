@@ -1,0 +1,22 @@
+name: pr
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  commit-lint:
+    uses: ./.github/workflows/_gate-commit-lint.yml
+  branch-lint:
+    uses: ./.github/workflows/_gate-branch-lint.yml
+  code-lint:
+    uses: ./.github/workflows/_gate-code-lint.yml
+  format-check:
+    uses: ./.github/workflows/_gate-format-check.yml
+  test:
+    uses: ./.github/workflows/_gate-test.yml
+  generate-docs:
+    uses: ./.github/workflows/_gate-generate-docs.yml

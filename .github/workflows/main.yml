@@ -1,0 +1,33 @@
+name: main
+# Merge router. All branches target main, so a closed-and-merged PR is the single
+# "landed on main" event. Route by branch prefix: hotfix/* publishes a patch
+# release now; everything else updates the accumulating draft Release.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+# Serialize with publish.yml so a hotfix release does not race the draft update or a feature publish.
+concurrency: release
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+jobs:
+  hotfix:
+    if: ${{ github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'hotfix/') }}
+    uses: ./.github/workflows/_release.yml
+    with:
+      draft: false
+      pr-number: ${{ github.event.pull_request.number }}
+  # Deploy docs after a hotfix release so Pages reflects the released version.
+  # (A release created by GITHUB_TOKEN does not fire `release: published`, so we
+  # chain it here rather than rely on publish.yml.)
+  deploy-docs:
+    needs: hotfix
+    if: ${{ needs.hotfix.result == 'success' }}
+    uses: ./.github/workflows/_deploy-docs.yml
+  draft:
+    if: ${{ github.event.pull_request.merged == true && !startsWith(github.event.pull_request.head.ref, 'hotfix/') }}
+    uses: ./.github/workflows/_release.yml
+    with:
+      draft: true
