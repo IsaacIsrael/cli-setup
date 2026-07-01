@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/social-preview.png" alt="cli-setup — Guided, idempotent macOS dev-environment setup" width="100%">
+</p>
+
 # cli-setup
 
 > A native Bash CLI for macOS that **diagnoses, installs, and reconciles** a developer's environment — idempotently and guided.
@@ -58,7 +62,10 @@ The first profile is `mobile` (React Native, bare workflow — iOS + Android).
 > ```
 >
 > The installer vendors `gum` and `jq` (no Homebrew dependency) into
-> `~/.cli-setup` and links the CLI onto your `PATH`.
+> `~/.cli-setup` and links the CLI onto your `PATH`. The version is sourced from
+> the released tag (stamped into the download); the installer writes it to
+> `~/.cli-setup/VERSION`, which `cli-setup --version` reads. There is no
+> committed `VERSION` or `CHANGELOG` — the changelog lives in the GitHub Releases.
 
 ## Project layout
 
@@ -100,10 +107,18 @@ These are introduced incrementally by the infrastructure milestone; see
 > Compatibility target: **Bash 3.2** (the macOS system Bash). Avoid Bash 4+
 > features such as associative arrays (`declare -A`).
 
+CI runs each quality gate as a reusable GitHub Actions workflow. Releases are
+tag-sourced (the git tag is the single source of truth — no committed `VERSION`
+or `CHANGELOG`): feature releases are cut from a draft GitHub Release via the
+native "Publish release" button, and `hotfix/*` merges auto-publish a patch
+release. The strategy is recorded in
+[ADR 0010](.agents/docs/adr/0010-ci-cd-strategy.md); the maintainer setup steps
+live in the [CI/CD setup runbook](.agents/docs/ci-cd-setup.md).
+
 ## Conventions
 
 - **Commits** follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/).
-- **Branches** follow Git Flow names (`feature/*`, `bugfix/*`, `release/*`, `hotfix/*`).
+- **Branches** are trunk-based, short-lived off `main` (`feature/*`, `bugfix/*`, `hotfix/*`).
 - **Language:** all artifacts and user-facing output are in **English**.
 
 ## Roadmap

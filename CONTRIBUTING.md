@@ -29,7 +29,7 @@ features such as associative arrays (`declare -A`).
 
 ## Making changes
 
-1. Create a branch using a Git Flow name (see below).
+1. Create a short-lived branch using a Git-Flow-style name (see below) — the names are familiar, but the workflow is trunk-based.
 2. Keep changes scoped to one logical unit of work.
 3. Run lint, format, and tests locally before opening a PR:
    - `shellcheck` on changed scripts
@@ -58,22 +58,49 @@ Commits are validated with `cog check`.
 
 ## Branch names
 
-Branches follow Git Flow naming:
+Development is trunk-based: every branch is short-lived, branches off `main`, and
+merges back into `main` (rebase-only). The prefix drives what happens on merge:
 
-| Prefix | Use for |
-| --- | --- |
-| `feature/<slug>` | New features and enhancements |
-| `bugfix/<slug>` | Bug fixes during development |
-| `release/<version>` | Release preparation |
-| `hotfix/<slug>` | Urgent fixes against a release |
+| Prefix | Use for | On merge to `main` |
+| --- | --- | --- |
+| `feature/<slug>` | New features and enhancements | Accumulates into the draft Release |
+| `bugfix/<slug>` | Non-urgent bug fixes | Rides the next feature release |
+| `hotfix/<slug>` | Urgent fixes | Auto-publishes a patch release |
 
 ## Pull request flow
 
-1. Push your branch and open a PR against the default branch.
+1. Push your branch and open a PR against `main`.
 2. Fill in the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
-3. Make sure CI is green: lint, format, tests, and `cog check`.
-4. Link the issue your PR addresses (e.g. `Closes #123`).
-5. A maintainer (see [CODEOWNERS](CODEOWNERS)) reviews and merges.
+3. Make sure the CI gates are green — each runs as its own check: commit-lint
+   (`cog check`), branch-lint, code-lint (ShellCheck), format-check (shfmt),
+   test (ShellSpec), and generate-docs (mdBook). A Lefthook `pre-push` hook will
+   also run the branch-name lint locally once wired up; until then CI is the
+   backstop.
+4. **CodeRabbit** reviews every PR as a blocking gate; resolve its findings (and
+   any open conversations) before merge. GitHub Copilot comments are advisory.
+5. Link the issue your PR addresses (e.g. `Closes #123`).
+6. PRs merge with **rebase only** — history stays linear (no squash, no merge
+   commits). Keep your commits meaningful and atomic so they survive as-is.
+
+## Releases
+
+Releases are **tag-sourced** — the git tag is the single source of truth; nothing
+(`VERSION`, `CHANGELOG`) is committed (see
+[ADR 0010](.agents/docs/adr/0010-ci-cd-strategy.md)). A release only creates a tag
+and a GitHub Release, never a commit to `main`:
+
+- **Feature release (on demand):** merges to `main` accumulate into a **draft
+  GitHub Release**. A maintainer clicks GitHub's native **"Publish release"**
+  button to cut it; the version comes from the published tag and is stamped into
+  the release asset.
+- **Hotfix release (automatic):** merging a `hotfix/*` PR auto-publishes a patch
+  release (tag + GitHub Release) scoped to that PR.
+
+The changelog lives in the GitHub Releases — there is no committed `CHANGELOG.md`.
+
+Repository/maintainer setup (branch protection, tag protection, Pages, required
+checks) is documented in the
+[CI/CD setup runbook](.agents/docs/ci-cd-setup.md).
 
 ## Reporting bugs and requesting features
 
