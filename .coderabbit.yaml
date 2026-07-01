@@ -1,0 +1,83 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+# CodeRabbit acts as a blocking review gate: request_changes_workflow + pre_merge
+# checks in `error` mode produce a failing required status check (the only thing
+# GitHub blocks a merge on). See .agents/docs/adr/0010-ci-cd-strategy.md.
+language: en-US
+reviews:
+  profile: chill
+  request_changes_workflow: true
+  auto_review:
+    enabled: true
+  # Global instructions apply to every file regardless of directory scope, so
+  # they reach src/ even though our authoritative rules live under .agents/.
+  # Distilled from .agents/rules/* and the review-relevant skills.
+  instructions: |
+    Enforce this repo's standards. Flag violations; do not restate what the code
+    already says.
+
+    Change discipline (.agents/rules/code-changes.mdc):
+    - Flag drive-by refactors or edits unrelated to the PR's stated purpose.
+    - New code must match surrounding naming, types, and abstractions.
+    - Flag comments that restate what the code does; comments should only explain
+      non-obvious intent, trade-offs, or constraints.
+    - Do not expect tests for trivial changes; only flag missing tests when they
+      would cover real behavior worth asserting.
+    - Flag new markdown/docs files that the change does not require.
+
+    Language (.agents/rules/project-language.mdc):
+    - All committed artifacts and user-facing CLI output must be English. Flag
+      non-English identifiers, comments, docs, or output. i18n is out of scope.
+
+    Git safety (.agents/rules/git-safety.mdc):
+    - Flag committed secrets or credentials (.env, private keys, tokens).
+
+    Deep modules (codebase-design skill):
+    - Prefer deep modules: simple interface hiding real complexity. Flag shallow
+      modules, pass-through methods, information leakage across the seam, and
+      temporal decomposition where a logical unit is split by execution order.
+
+    Tests (tdd skill):
+    - Tests must assert observable external behavior, not implementation details.
+    - Flag tests with no meaningful assertions or that depend on execution order.
+
+    Commit subjects (Conventional Commits):
+    - Commit subjects follow `<type>[optional scope]: <description>` (lowercase
+      type, imperative, no trailing period). Types: feat, fix, build, chore, ci,
+      docs, refactor, perf, style, test. The PR *title* uses a different format
+      (see the title pre-merge check) — do not flag PR titles against this.
+  path_instructions:
+    - path: "src/**/*.sh"
+      instructions: |
+        Product runtime targets Bash 3.2 (macOS system Bash). Flag Bash 4+ only
+        features: associative arrays (`declare -A`), `${var^^}`/`${var,,}` case
+        modification, `mapfile`/`readarray`, negative array indexing, and `&>>`.
+    - path: "src/bin/**"
+      instructions: |
+        This is the installable payload shipped to ~/.cli-setup. Flag any new
+        runtime dependency on Node or non-vendored tools (only `gum` and `jq` are
+        vendored). See ADR 0002 (native, no-Node toolchain).
+  pre_merge_checks:
+    title:
+      mode: error
+      requirements: |
+        PR title format is `[Type] description`, where Type is a
+        Git-Flow-style branch type with its first letter uppercase — one of
+        Feature, Bugfix, or Hotfix — matching the branch prefix. The
+        description starts with a capital letter, has no trailing period, and
+        wraps commands, file names, and identifiers in backticks. Example:
+        [Feature] Add `doctor` command.
+        This is distinct from Conventional Commits, which governs commit
+        subjects, not the PR title.
+        Exempt automated dependency-update PRs: titles authored by Dependabot
+        (e.g. `build(deps): ...` or `build(deps-dev): ...`) are allowed as-is.
+    description:
+      mode: error
+    issue_assessment:
+      mode: error
+    docstrings:
+      mode: "off"
+knowledge_base:
+  # Keep auto-detection on so root AGENTS.md and .cursorrules are picked up
+  # repo-wide, alongside the global instructions above.
+  code_guidelines:
+    enabled: true

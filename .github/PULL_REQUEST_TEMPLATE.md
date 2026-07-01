@@ -1,7 +1,7 @@
 <!--
 Thanks for contributing to cli-setup!
-Title format: [Type] description, where Type is a Git Flow type with its
-first letter uppercase: Feature | Bugfix | Release | Hotfix.
+Title format: [Type] description, where Type is a Git-Flow-style branch type
+with its first letter uppercase: Feature | Bugfix | Hotfix.
 Start the description with a capital letter, and wrap commands, file names,
 and identifiers in `backticks`. e.g. "[Feature] Add `doctor` command".
 CI/CD runs the gates (cog check, shellcheck, shfmt, shellspec, Bash 3.2).
