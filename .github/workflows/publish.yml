@@ -1,0 +1,17 @@
+name: publish
+# A maintainer clicking GitHub's native "Publish release" button flips the
+# accumulated draft to published and creates the tag. The asset was pre-attached
+# to the draft and the changelog-base cursor self-advances on the next draft
+# update, so publish only needs to deploy the docs for the released version.
+on:
+  release:
+    types: [published]
+# Serialize with main.yml so a feature publish does not race a draft update or a hotfix release.
+concurrency: release
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  deploy-docs:
+    uses: ./.github/workflows/_deploy-docs.yml

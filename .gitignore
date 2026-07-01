@@ -26,3 +26,9 @@ coverage/
 # mdBook build output
 docs/book/
 book/
+
+# Tag-sourced releases (ADR 0010): the version lives in the git tag and the
+# changelog in the GitHub Releases — never commit these. Guard against accidents.
+/VERSION
+/CHANGELOG.md
+/CHANGELOG

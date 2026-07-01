@@ -1,0 +1,45 @@
+name: release
+# Single release workflow. The `draft` input selects the behavior:
+#   draft: true  -> update the accumulating draft Release (feature/bugfix merge)
+#   draft: false -> publish a patch Release now (hotfix/* merge)
+on:
+  workflow_call:
+    inputs:
+      draft:
+        description: "true = update the draft Release (feature/bugfix); false = publish a patch Release (hotfix)"
+        required: true
+        type: boolean
+      pr-number:
+        description: The merged PR number, used to scope hotfix release notes
+        required: false
+        type: string
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - name: release (placeholder)
+        env:
+          DRAFT: ${{ inputs.draft }}
+          PR_NUMBER: ${{ inputs.pr-number }}
+        run: |
+          if [ "$DRAFT" = "true" ]; then
+            echo "release (draft) placeholder - slice #10 (feature/bugfix merge):"
+            echo "  1. advance changelog-base to the latest published feature (minor/major) tag"
+            echo "  2. cog computes the pending minor/major from commits since the last v* tag"
+            echo "  3. update the draft GitHub Release, notes from changelog-base..HEAD"
+            echo "  4. build + stamp the asset with the pending version and attach it to the draft"
+            echo "  no commit to main"
+          else
+            echo "release (hotfix) placeholder - slice #10 (hotfix/* merge, PR #${PR_NUMBER:-?}):"
+            echo "  1. cog forces a patch bump from the latest v* tag"
+            echo "  2. create tag vX at the current main HEAD"
+            echo "  3. build + stamp the asset with the version; publish a Release scoped to the PR"
+            echo "  does NOT advance changelog-base; no commit to main"
+          fi
