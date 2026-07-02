@@ -12,6 +12,5 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
       - uses: ./.github/actions/setup
-      - name: commit-lint (placeholder)
-        run: |
-          echo "commit-lint placeholder - slice #4: cog check"
+      - name: cog check
+        run: cog check
