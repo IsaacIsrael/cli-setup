@@ -25,8 +25,13 @@ docs, and repo metadata stay outside it.
 │       └── <id>.json    # lists tool ids; the core resolves the dependency graph
 ├── spec/                # ShellSpec tests (not installed)
 ├── docs/                # mdBook documentation site source (not installed)
+├── maintenance/         # repo tooling scripts (not installed) — e.g. lint.sh, which finds the shell files and runs the ShellCheck gate
 └── install.sh           # curl-able installer; copies src/ into ~/.cli-setup, vendors gum + jq, symlinks the entrypoint (later slice)
 ```
+
+`maintenance/` holds scripts that operate on the repo itself (linting, CI helpers)
+rather than shipping to the user — so it stays outside `src/` (the installable
+payload), alongside `spec/` and `docs/`.
 
 ## Layer responsibilities
 

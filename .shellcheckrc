@@ -1,0 +1,15 @@
+# ShellCheck configuration for cli-setup — see https://www.shellcheck.net/wiki/.
+# This is the code-correctness gate for all shell in the repo; `just lint`,
+# the Lefthook pre-commit hook, and CI all run ShellCheck against it.
+
+# The CLI targets Bash 3.2 (the macOS system Bash), so analyze files without a
+# recognizable shebang (e.g. the extensionless `bin/` entrypoint) as bash.
+shell=bash
+
+# Follow `source`d files across the tree (resolved relative to the sourcing
+# script) so cross-file sourcing in src/lib is checked, not reported as SC1091.
+external-sources=true
+source-path=SCRIPTDIR
+
+# No checks are disabled repo-wide. Suppress a specific finding at its source
+# with a documented inline `# shellcheck disable=SCxxxx` directive stating why.
