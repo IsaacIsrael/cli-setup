@@ -2,7 +2,7 @@
 # Run ShellCheck over the repo's shell files (config in .shellcheckrc).
 # ShellCheck can't discover files itself, so this finds them first, then lints.
 #
-#   lint.sh          # whole project (all tracked shell files)
+#   lint.sh          # whole project (tracked + new, non-ignored shell files)
 #   lint.sh stage    # only the staged shell files (added/copied/modified)
 #
 # A shell file is a *.sh/*.bash path, or a file whose first line is a shell
@@ -22,7 +22,10 @@ esac
 # below, so the mode is validated above (in the main shell) rather than here.
 candidates() {
   case "$1" in
-    all) git ls-files ;;
+    # Tracked files plus new (untracked) ones, so a file you haven't `git add`ed
+    # yet is still linted — matching `just fmt`'s working-tree coverage.
+    # --exclude-standard honors .gitignore, so ephemeral .scratch/ stays out.
+    all) git ls-files --cached --others --exclude-standard ;;
     stage | staged) git diff --cached --name-only --diff-filter=ACM ;;
   esac
 }
