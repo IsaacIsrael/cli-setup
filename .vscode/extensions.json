@@ -1,0 +1,10 @@
+{
+  // Extensions Cursor/VS Code recommends to contributors on opening the repo.
+  // These are prompts only — nothing is installed automatically.
+  "recommendations": [
+    // Inline ShellCheck diagnostics. Reuses the shellcheck binary from the
+    // Brewfile toolchain (installed by `just setup`) and this repo's
+    // .shellcheckrc, so editor squiggles match `just lint` and CI exactly.
+    "timonwong.shellcheck"
+  ]
+}

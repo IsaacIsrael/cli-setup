@@ -42,6 +42,10 @@ truth. The toolchain it installs:
 | Task runner | `just` |
 | Docs site | mdBook |
 
+If you use Cursor or VS Code, accept the recommended-extensions prompt
+(`.vscode/extensions.json`): the ShellCheck extension surfaces the same
+diagnostics inline as you type, reusing this repo's `.shellcheckrc`.
+
 Compatibility target: **Bash 3.2** (the macOS system Bash). Do not use Bash 4+
 features such as associative arrays (`declare -A`).
 
