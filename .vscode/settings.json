@@ -1,0 +1,27 @@
+{
+  // Format files on save. Shell files go through shfmt (via the shell-format
+  // extension) and every file's whitespace/encoding is normalized by the
+  // EditorConfig extension — both driven by this repo's .editorconfig, so saving
+  // in the editor matches `just fmt` and the CI format-check exactly. No Node
+  // toolchain (Prettier/ESLint) is used — see ADR 0002 (native toolchain).
+  "editor.formatOnSave": true,
+  // Shell: format with shfmt. The extension invokes shfmt with no printer flags,
+  // so shfmt reads .editorconfig (2-space indent, indented case bodies, ...).
+  "[shellscript]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  },
+  // Let shfmt read .editorconfig instead of the extension's own flag settings, so
+  // editor formatting matches `just fmt` and CI exactly.
+  "shellformat.useEditorConfig": true,
+  // `justfile` has its own syntax — it is neither shell nor Markdown. Editors can
+  // misdetect it (e.g. as Markdown) and a format-on-save formatter then mangles it
+  // (inserting blank lines, escaping `*`). Pin it to the Makefile grammar (close
+  // enough for highlighting) and turn formatting off so nothing rewrites it.
+  "files.associations": {
+    "justfile": "makefile",
+    "*.just": "makefile"
+  },
+  "[makefile]": {
+    "editor.formatOnSave": false
+  }
+}
