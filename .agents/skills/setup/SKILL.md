@@ -33,16 +33,23 @@ for rule in .agents/rules/*.mdc; do
   target="../../.agents/rules/$name"
   link=".cursor/rules/$name"
 
-  if [ -L "$link" ] && [ "$(readlink "$link")" = "$target" ]; then
-    echo "ok: $link"
+  if [ -L "$link" ]; then
+    if [ "$(readlink "$link")" = "$target" ]; then
+      echo "ok: $link"
+    else
+      ln -sf "$target" "$link"   # our own symlink, wrong target — safe to repoint
+      echo "relinked: $link -> $target"
+    fi
+  elif [ -e "$link" ]; then
+    echo "conflict: $link exists and is not a symlink — leaving it untouched" >&2
   else
-    ln -sf "$target" "$link"
+    ln -s "$target" "$link"
     echo "linked: $link -> $target"
   fi
 done
 ```
 
-If a path at `.cursor/rules/$name` exists and is **not** a symlink to the expected target, stop and ask the user before overwriting.
+The script never overwrites a **regular file**: if one already sits where a symlink should go, it prints `conflict:` and leaves it untouched. When you see a conflict, stop and ask the user before removing it — never delete it automatically. (A stale symlink of ours pointing at the wrong target is safe, so the script just repoints it.)
 
 ### A3. Verify
 
