@@ -8,6 +8,14 @@ pre-commit:
       # is the unbypassable whole-project backstop. `just lint stage` discovers the
       # staged shell files itself via maintenance/lint.sh.
       run: just lint stage
+    format:
+      # Report unformatted staged shell files (report-only, like shellcheck above);
+      # `just fmt` in CI is the whole-project backstop. `just fmt` never edits — run
+      # `just fmt --write` to apply, or let the editor format on save. The glob scopes
+      # {staged_files} to shell, and Lefthook skips the command when none match.
+      # shfmt settings come from .editorconfig.
+      glob: "*.{sh,bash}"
+      run: just fmt {staged_files}
 
 commit-msg:
   commands:

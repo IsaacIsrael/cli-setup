@@ -54,8 +54,8 @@ features such as associative arrays (`declare -A`).
 1. Create a short-lived branch using a Git-Flow-style name (see below) — the names are familiar, but the workflow is trunk-based.
 2. Keep changes scoped to one logical unit of work.
 3. Run lint, format, and tests locally before opening a PR:
-   - `shellcheck` on changed scripts
-   - `shfmt` to format
+   - `just lint` to run ShellCheck
+   - `just fmt` to report formatting drift (or `just fmt --write` to apply)
    - `shellspec` for the test suite
 4. Write tests that assert **observable external behavior**, not implementation
    details.
