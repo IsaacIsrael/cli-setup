@@ -10,7 +10,7 @@ Before writing any code, start on a fresh branch. Choose a name per the branch t
 
 Use /tdd where possible, at pre-agreed seams.
 
-Run static analysis (`shellcheck`) regularly, single test files regularly, and the full test suite once at the end.
+Prefer the repo's `just` recipes over invoking tools directly — run `just` to see what exists (today only `just setup`; `lint`, `fmt`, `test`, and `docs` recipes land over later infrastructure slices, so until a recipe exists, call the tool directly). Bootstrap with `just setup` if the toolchain is not yet installed. Run static analysis regularly, single test files regularly, and the full test suite once at the end.
 
 Once done, use /code-review to review the work.
 
