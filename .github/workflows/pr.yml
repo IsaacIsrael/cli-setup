@@ -1,7 +1,8 @@
 name: pr
+# Every PR runs every gate — including stacked PRs onto a non-main base — so no
+# branch merges un-gated or un-reviewed. Release routing stays main-only (main.yml).
 on:
   pull_request:
-    branches: [main]
 permissions:
   contents: read
 concurrency:
