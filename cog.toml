@@ -1,0 +1,12 @@
+# Cocogitto configuration — Conventional Commits 1.0.0.
+#
+# The git tag is the single source of truth for the version (ADR 0010): a
+# release only creates a `vX` tag + GitHub Release, and nothing (VERSION,
+# CHANGELOG) is committed. `tag_prefix = "v"` makes cog read only `v*` tags for
+# versioning, so the non-prefixed `changelog-base` cursor tag is ignored.
+#
+# The default commit types already match this repo's allowed set (feat, fix,
+# build, chore, ci, docs, refactor, perf, style, test), so none are overridden.
+
+tag_prefix = "v"
+ignore_merge_commits = true

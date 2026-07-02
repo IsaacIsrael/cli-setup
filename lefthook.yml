@@ -1,0 +1,8 @@
+# Git hooks managed by Lefthook. Install locally with `lefthook install`
+# (or `just setup`). Later toolchain slices add a `pre-push` branch-name lint.
+
+commit-msg:
+  commands:
+    conventional-commit:
+      # {1} is the path to the commit-message file git passes to the hook.
+      run: cog verify --file {1}
