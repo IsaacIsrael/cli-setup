@@ -10,8 +10,10 @@ Before writing any code, start on a fresh branch. Choose a name per the branch t
 
 Use /tdd where possible, at pre-agreed seams.
 
-Prefer the repo's `just` recipes over invoking tools directly — run `just` to see what exists (today only `just setup`; `lint`, `fmt`, `test`, and `docs` recipes land over later infrastructure slices, so until a recipe exists, call the tool directly). Bootstrap with `just setup` if the toolchain is not yet installed. Run static analysis regularly, single test files regularly, and the full test suite once at the end.
+Prefer the repo's `just` recipes over invoking tools directly — run `just` to see what exists (`setup`, `lint`, and `fmt` exist today; `test` and `docs` land over later infrastructure slices, so until a recipe exists, call the tool directly). Bootstrap with `just setup` if the toolchain is not yet installed. Run static analysis regularly, single test files regularly, and the full test suite once at the end.
 
 Once done, use /code-review to review the work.
 
-Commit your work to the current branch.
+Before committing, make the working tree pass the repo's gates: run `just fmt` (formatting) and `just lint` (ShellCheck). Fix anything they flag **in consultation with the user**, never silently — `just fmt --write` applies shfmt; for lint, propose the ShellCheck fixes and confirm before editing — then re-run both until clean.
+
+Commit your work to the current branch with /commit, which prioritizes **absorbing** each change into the branch-local commit it belongs to and only creates a new commit when no exclusive target fits — always confirming the plan with the user.

@@ -1,13 +1,14 @@
 ---
 name: setup
-description: Post-clone bootstrap — wire Cursor rule symlinks and install the dev toolchain (Homebrew + `just setup`).
+description: Post-clone bootstrap — wire Cursor rule symlinks, install the dev toolchain (Homebrew + `just setup`), and install the recommended editor extensions.
 disable-model-invocation: true
 ---
 
 # Setup
 
-Post-clone bootstrap. Two independent concerns: wire the Cursor rule symlinks,
-and install the dev toolchain. Do both.
+Post-clone bootstrap. Three independent concerns: wire the Cursor rule symlinks,
+install the dev toolchain, and install the recommended editor extensions. Do all
+three (Part C is optional — skip it silently when no editor CLI is present).
 
 ## Part A — Cursor rule symlinks
 
@@ -91,3 +92,35 @@ just setup
 ### B3. Verify
 
 **Completion criterion:** `just --list` shows the recipes and the git hooks are wired (`.git/hooks/commit-msg` exists). Report the toolchain as bootstrapped.
+
+## Part C — Editor extensions (optional; Cursor / VS Code)
+
+The recommended extensions live in [`.vscode/extensions.json`](../../../.vscode/extensions.json) — the editor only *prompts* to install them on open. This step installs them non-interactively for whoever bootstraps from the CLI, and pins the one version that matters. Editor extensions are a convenience that mirrors the CLI gates (ShellCheck, and shfmt via `.editorconfig`); they are **not** part of the project toolchain (ADR 0002), so this part is best-effort and skipped when no editor CLI is present.
+
+### C1. Install (only if an editor CLI exists)
+
+Prefer the Cursor CLI, fall back to VS Code's `code`. If neither is on PATH, skip — the extensions are optional.
+
+```bash
+editor_cli=""
+for c in cursor code; do
+  command -v "$c" >/dev/null 2>&1 && editor_cli="$c" && break
+done
+
+if [ -z "$editor_cli" ]; then
+  echo "no 'cursor'/'code' CLI found — skipping editor extensions (optional)"
+else
+  "$editor_cli" --install-extension timonwong.shellcheck --force
+  "$editor_cli" --install-extension EditorConfig.EditorConfig --force
+  # Pin 7.2.2: shell-format 7.2.8 ships a broken package (missing
+  # dist/one_ini_bg.wasm) that fails to activate, so no shellscript formatter
+  # gets registered. See .vscode/extensions.json and CONTRIBUTING.md.
+  "$editor_cli" --install-extension foxundermoon.shell-format@7.2.2 --force
+fi
+```
+
+The pin only sets the correct *starting* version — it does not stop the editor from auto-updating shell-format back to the broken 7.2.8. Tell the user to turn off "Auto Update" for that extension (see [`CONTRIBUTING.md`](../../../CONTRIBUTING.md)). When upstream ships a fixed release, drop the `@7.2.2` pin here and the matching notes in `.vscode/extensions.json` and `CONTRIBUTING.md`.
+
+### C2. Verify
+
+**Completion criterion:** when an editor CLI is present, `<cli> --list-extensions --show-versions` lists `foxundermoon.shell-format@7.2.2`, `EditorConfig.EditorConfig`, and `timonwong.shellcheck`. When no editor CLI is present, report the step as skipped.
