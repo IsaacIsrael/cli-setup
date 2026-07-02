@@ -101,8 +101,11 @@ This project uses a native, single-binary toolchain (no Node runtime):
 | Task runner | [`just`](https://github.com/casey/just) + `Brewfile` |
 | Docs site | [mdBook](https://rust-lang.github.io/mdBook/) |
 
-These are introduced incrementally by the infrastructure milestone; see
-[CONTRIBUTING.md](CONTRIBUTING.md) for setup once they land.
+Bootstrap the toolchain with [Homebrew](https://brew.sh), `brew install just`,
+and `just setup` — see [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step.
+`just setup` installs the `Brewfile` tools and wires the git hooks; run `just`
+to list the recipes. The individual `lint`, `fmt`, `test`, and `docs` recipes
+fill in over the infrastructure milestone.
 
 > Compatibility target: **Bash 3.2** (the macOS system Bash). Avoid Bash 4+
 > features such as associative arrays (`declare -A`).
