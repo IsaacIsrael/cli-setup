@@ -1,6 +1,14 @@
 # Git hooks managed by Lefthook. Install locally with `lefthook install`
 # (or `just setup`). Later toolchain slices add a `pre-push` branch-name lint.
 
+pre-commit:
+  commands:
+    shellcheck:
+      # Lint the staged shell files (fast, changed-files-only); `just lint` in CI
+      # is the unbypassable whole-project backstop. `just lint stage` discovers the
+      # staged shell files itself via maintenance/lint.sh.
+      run: just lint stage
+
 commit-msg:
   commands:
     conventional-commit:
