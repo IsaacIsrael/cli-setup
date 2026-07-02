@@ -1,0 +1,40 @@
+# EditorConfig for cli-setup — https://editorconfig.org.
+# This is the whitespace/encoding baseline for the repo, and it doubles as the
+# single source of truth for shfmt: `shfmt` reads these settings natively (no CLI
+# flags), so `just fmt` and the editor's shfmt integration format identically.
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Shell — the keys below are consumed by shfmt (github.com/mvdan/sh). They mirror
+# the repo's existing style (2-space indent, indented `case` bodies). When the
+# extensionless entrypoint (e.g. src/bin/cli-setup) lands, add its path here so
+# shfmt applies these settings to it too.
+[*.{sh,bash}]
+indent_size = 2
+shell_variant = bash
+switch_case_indent = true
+binary_next_line = false
+space_redirects = false
+keep_padding = false
+
+# Markdown uses two trailing spaces for hard line breaks — don't strip them.
+[*.md]
+trim_trailing_whitespace = false
+
+# just recipe bodies are indented with 4 spaces.
+[justfile]
+indent_size = 4
+
+# shfmt: skip the gitignored, ephemeral scratch space (ADR 0007) — it holds
+# throwaway artifacts that are not subject to the repo's formatting standard.
+# `ignore` is a shfmt-specific EditorConfig key (unknown keys are ignored by
+# editors and other EditorConfig consumers).
+[.scratch/**]
+ignore = true

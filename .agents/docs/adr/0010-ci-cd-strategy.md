@@ -76,7 +76,7 @@ Trunk-based development means incomplete work merges to `main` dormant behind fl
     ├── _gate-commit-lint.yml    # workflow_call → setup + placeholder (#4: cog check)
     ├── _gate-branch-lint.yml    # workflow_call → setup + placeholder (#5: branch-name lint, CI backstop)
     ├── _gate-code-lint.yml      # workflow_call → setup + placeholder (#6: ShellCheck)
-    ├── _gate-format-check.yml   # workflow_call → setup + placeholder (#7: shfmt + editorconfig)
+    ├── _gate-format-check.yml   # workflow_call → setup + just fmt (shfmt + .editorconfig) (#7, landed)
     ├── _gate-test.yml           # workflow_call → setup + placeholder (#8: ShellSpec)
     ├── _gate-generate-docs.yml  # workflow_call → setup + placeholder (#9: mdBook build)
     ├── _deploy-docs.yml         # workflow_call → setup + placeholder (#9: mdBook build + Pages deploy; runs on release)

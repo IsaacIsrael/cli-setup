@@ -11,6 +11,5 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: format-check (placeholder)
-        run: |
-          echo "format-check placeholder - slice #7: shfmt + .editorconfig"
+      - name: shfmt
+        run: just fmt
