@@ -8,21 +8,39 @@ All artifacts and user-facing output are written in **English**.
 ## Toolchain setup
 
 `cli-setup` is a native Bash project for macOS with a single-binary toolchain
-(no Node runtime). The recommended way to install the toolchain is Homebrew:
+(no Node runtime). Bootstrap it in three steps:
 
-| Concern | Tool | Install |
-| --- | --- | --- |
-| Lint (code) | ShellCheck | `brew install shellcheck` |
-| Format | shfmt | `brew install shfmt` |
-| Tests | ShellSpec | `brew install shellspec` |
-| Git hooks | Lefthook | `brew install lefthook` |
-| Commits / releases | Cocogitto (`cog`) | `brew install cocogitto` |
-| Task runner | `just` | `brew install just` |
-| Docs site | mdBook | `brew install mdbook` |
+1. **Install Homebrew** (skip if you already have it):
 
-> A `Brewfile` and `just` recipes are introduced by the infrastructure
-> milestone; once present, `brew bundle` + `just setup` will bootstrap the
-> toolchain for you. Until then, install the tools you need individually.
+   ```bash
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   ```
+
+2. **Install `just`** — the task runner that drives the rest:
+
+   ```bash
+   brew install just
+   ```
+
+3. **Run the bootstrap recipe** — installs the rest of the `Brewfile` tools and wires the git hooks:
+
+   ```bash
+   just setup
+   ```
+
+Then run `just` to list the available recipes. Prefer `just setup` over
+installing the tools individually — the `Brewfile` is the single source of
+truth. The toolchain it installs:
+
+| Concern | Tool |
+| --- | --- |
+| Lint (code) | ShellCheck |
+| Format | shfmt |
+| Tests | ShellSpec |
+| Git hooks | Lefthook |
+| Commits / releases | Cocogitto (`cog`) |
+| Task runner | `just` |
+| Docs site | mdBook |
 
 Compatibility target: **Bash 3.2** (the macOS system Bash). Do not use Bash 4+
 features such as associative arrays (`declare -A`).
