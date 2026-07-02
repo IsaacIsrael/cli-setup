@@ -44,7 +44,16 @@ truth. The toolchain it installs:
 
 If you use Cursor or VS Code, accept the recommended-extensions prompt
 (`.vscode/extensions.json`): the ShellCheck extension surfaces the same
-diagnostics inline as you type, reusing this repo's `.shellcheckrc`.
+diagnostics inline as you type (reusing this repo's `.shellcheckrc`), and the
+EditorConfig and shell-format extensions apply this repo's `.editorconfig` so
+editor formatting matches `just fmt`.
+
+> **shell-format version:** use **7.2.2**. Version 7.2.8 ships a broken package
+> (missing `dist/one_ini_bg.wasm`) that fails to activate, so you get "There is
+> no formatter for 'shellscript' files installed"
+> ([issue #295](https://github.com/foxundermoon/vs-shell-format/issues/295)). If
+> you land on 7.2.8, right-click the extension → "Install Specific Version…" →
+> 7.2.2, then turn off "Auto Update".
 
 Compatibility target: **Bash 3.2** (the macOS system Bash). Do not use Bash 4+
 features such as associative arrays (`declare -A`).

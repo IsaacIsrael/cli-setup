@@ -5,6 +5,20 @@
     // Inline ShellCheck diagnostics. Reuses the shellcheck binary from the
     // Brewfile toolchain (installed by `just setup`) and this repo's
     // .shellcheckrc, so editor squiggles match `just lint` and CI exactly.
-    "timonwong.shellcheck"
+    "timonwong.shellcheck",
+    // Honor this repo's .editorconfig (charset, EOL, indentation, final newline)
+    // as you type, so files land formatted the way `just fmt` expects.
+    "EditorConfig.EditorConfig",
+    // Format-on-save with shfmt. It reads the same .editorconfig, so editor
+    // formatting matches `just fmt` and the CI format-check exactly.
+    //
+    // Use 7.2.2. Version 7.2.8 ships a broken package (missing dist/
+    // one_ini_bg.wasm) that fails to activate, so no shellscript formatter gets
+    // registered and you get "There is no formatter for 'shellscript' files
+    // installed" — https://github.com/foxundermoon/vs-shell-format/issues/295.
+    // extensions.json cannot pin a version, so if you land on 7.2.8: right-click
+    // the extension -> "Install Specific Version..." -> 7.2.2, then turn OFF
+    // "Auto Update" so it does not upgrade back to the broken build.
+    "foxundermoon.shell-format"
   ]
 }
