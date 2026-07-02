@@ -8,6 +8,10 @@ reviews:
   request_changes_workflow: true
   auto_review:
     enabled: true
+    # Review every PR, including stacked PRs onto a non-main base (the default is
+    # the default branch only), matching pr.yml so no PR merges un-reviewed.
+    base_branches:
+      - ".*"
   # Global instructions apply to every file regardless of directory scope, so
   # they reach src/ even though our authoritative rules live under .agents/.
   # Distilled from .agents/rules/* and the review-relevant skills.
