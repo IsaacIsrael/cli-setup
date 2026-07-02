@@ -1,9 +1,27 @@
 name: setup
-description: Install the cli-setup toolchain (placeholder; slice 4 adds brew bundle + Homebrew cache)
+description: Install the cli-setup dev toolchain via `brew bundle` from the Brewfile, with a Homebrew cache.
 runs:
   using: composite
   steps:
-    - name: Install toolchain (placeholder)
+    - name: Add Homebrew to PATH
       shell: bash
+      # ubuntu-latest ships Homebrew at /home/linuxbrew but deliberately keeps
+      # it off PATH; put it on $GITHUB_PATH so every later step (and this
+      # action's own steps) can call `brew`. See actions/runner-images#6283.
       run: |
-        echo "setup placeholder - slice #4 adds 'brew bundle' from the Brewfile + Homebrew cache"
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        echo "${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin" >> "$GITHUB_PATH"
+    - name: Resolve Homebrew cache dir
+      id: brew-cache
+      shell: bash
+      run: echo "dir=$(brew --cache)" >> "$GITHUB_OUTPUT"
+    - name: Cache Homebrew downloads
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      with:
+        path: ${{ steps.brew-cache.outputs.dir }}
+        key: ${{ runner.os }}-brew-${{ hashFiles('Brewfile') }}
+        restore-keys: |
+          ${{ runner.os }}-brew-
+    - name: Install toolchain (brew bundle)
+      shell: bash
+      run: brew bundle --file=Brewfile
