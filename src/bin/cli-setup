@@ -70,6 +70,9 @@ case "${1:-}" in
     print_help
     exit 0
     ;;
+  doctor | setup | update | config)
+    fail "command '$1' is planned but not implemented yet"
+    ;;
   -*)
     fail "unknown option '$1'"
     ;;

@@ -57,6 +57,14 @@ Describe 'cli-setup dispatcher'
     End
   End
 
+  Describe 'planned commands'
+    It 'reports a planned command as not implemented and exits non-zero'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" doctor
+      The status should be failure
+      The error should include "not implemented"
+    End
+  End
+
   Describe 'unknown input'
     It 'errors and exits non-zero on an unknown command'
       When run script "$CLI_SETUP_ROOT/bin/cli-setup" bogus
