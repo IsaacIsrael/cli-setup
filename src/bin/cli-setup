@@ -1,7 +1,31 @@
 #!/usr/bin/env bash
-# cli-setup entrypoint — placeholder. The real command dispatcher (flag parsing,
-# --version / --help, subcommands) lands in #8; for now it prints its name so the
-# ShellSpec harness can exercise the real entrypoint end to end.
+# cli-setup entrypoint — the command dispatcher (built incrementally in #8).
 set -euo pipefail
+
+# Resolve the install root (the parent of this script's bin/ directory),
+# following symlinks so paths hold whether the entrypoint runs in place
+# (src/bin/cli-setup) or via the symlink install.sh puts on PATH
+# (~/.cli-setup/bin/cli-setup). macOS lacks `readlink -f`, so walk the links.
+resolve_root() {
+  source=${BASH_SOURCE[0]}
+  while [ -h "$source" ]; do
+    dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
+    source=$(readlink "$source")
+    case $source in
+      /*) ;;
+      *) source=$dir/$source ;;
+    esac
+  done
+  dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
+  dirname "$dir"
+}
+
+if [ "${1:-}" = "--version" ]; then
+  # install.sh materializes <root>/VERSION from the released tag (ADR 0010).
+  line=""
+  IFS= read -r line <"$(resolve_root)/VERSION" || true
+  printf '%s\n' "$line"
+  exit 0
+fi
 
 echo "cli-setup"
