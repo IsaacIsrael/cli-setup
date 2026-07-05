@@ -18,6 +18,10 @@ setup:
     brew bundle
     lefthook install
 
+# Run the CLI from source (dev entrypoint), e.g. `just run --help` or `just run doctor mobile`.
+run *args:
+    @src/bin/cli-setup "$@"
+
 # Lint shell files with ShellCheck (config in .shellcheckrc). maintenance/lint.sh finds
 # the repo's shell files (ShellCheck can't discover them itself) and runs shellcheck.
 # `just lint` checks the whole project; `just lint stage` checks the staged files.
@@ -33,7 +37,7 @@ brlint *args:
     @maintenance/brlint.sh "$@"
 
 # Run the ShellSpec test suite (options in .shellspec, harness in spec/spec_helper.sh).
-# `just test` runs every spec; pass a path to run one, e.g. `just test spec/smoke_spec.sh`.
+# `just test` runs every spec; pass a path to run one, e.g. `just test spec/bin/cli-setup_spec.sh`.
 test *args:
     @shellspec "$@"
 
