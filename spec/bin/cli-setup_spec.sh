@@ -28,4 +28,24 @@ Describe 'cli-setup dispatcher'
       The status should be success
     End
   End
+
+  Describe '--help / -h'
+    It 'prints the usage, planned commands, and global flags'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" --help
+      The output should include "Usage:"
+      The output should include "doctor"
+      The output should include "setup"
+      The output should include "update"
+      The output should include "config"
+      The output should include "planned"
+      The output should include "--verbose"
+      The status should be success
+    End
+
+    It 'prints the same usage for the -h alias'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" -h
+      The output should include "Usage:"
+      The status should be success
+    End
+  End
 End
