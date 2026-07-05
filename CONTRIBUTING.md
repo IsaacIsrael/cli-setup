@@ -65,7 +65,7 @@ features such as associative arrays (`declare -A`).
 3. Run lint, format, and tests locally before opening a PR:
    - `just lint` to run ShellCheck
    - `just fmt` to report formatting drift (or `just fmt --write` to apply)
-   - `shellspec` for the test suite
+   - `just test` to run the ShellSpec suite
 4. Write tests that assert **observable external behavior**, not implementation
    details.
 
