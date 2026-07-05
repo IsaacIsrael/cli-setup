@@ -11,6 +11,5 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: test (placeholder)
-        run: |
-          echo "test placeholder - slice #8: ShellSpec"
+      - name: ShellSpec
+        run: just test
