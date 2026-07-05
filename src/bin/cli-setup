@@ -29,6 +29,12 @@ print_version() {
   printf '%s\n' "$line"
 }
 
+fail() {
+  printf '%s: %s\n' "$PROG" "$1" >&2
+  printf "Run '%s --help' for usage.\n" "$PROG" >&2
+  exit 2
+}
+
 print_help() {
   cat <<EOF
 $PROG — guided macOS dev environment setup.
@@ -63,5 +69,11 @@ case "${1:-}" in
   -h | --help)
     print_help
     exit 0
+    ;;
+  -*)
+    fail "unknown option '$1'"
+    ;;
+  *)
+    fail "unknown command '$1'"
     ;;
 esac
