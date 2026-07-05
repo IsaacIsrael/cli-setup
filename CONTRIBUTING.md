@@ -98,14 +98,22 @@ merges back into `main` (rebase-only). The prefix drives what happens on merge:
 | `bugfix/<slug>` | Non-urgent bug fixes | Rides the next feature release |
 | `hotfix/<slug>` | Urgent fixes | Auto-publishes a patch release |
 
+`release/<slug>` and `support/<slug>` are also accepted by the branch-name lint
+(the full Git Flow set) but carry no special merge routing. The `<slug>` is a
+kebab-case description — lowercase alphanumerics in hyphen-separated words. Lead
+it with the issue number where there is one (e.g. `feature/5-branch-name-lint`);
+the lint warns when it is missing but still passes, since not every branch has an
+issue. Validate a name any time with `just brlint <name>`.
+
 ## Pull request flow
 
 1. Push your branch and open a PR against `main`.
 2. Fill in the [pull request template](.github/PULL_REQUEST_TEMPLATE.md).
 3. Make sure the CI gates are green — each runs as its own check: commit-lint
    (`cog check`), branch-lint, code-lint (ShellCheck), format-check (shfmt),
-   test (ShellSpec), and generate-docs (mdBook). A Lefthook `pre-push` hook will
-   also run the branch-name lint locally once wired up; until then CI is the
+   test (ShellSpec), and generate-docs (mdBook). A Lefthook `pre-push` hook runs
+   the branch-name lint locally (`just brlint`) so a bad name is caught
+   before it leaves your machine; the CI branch-lint gate is the unbypassable
    backstop.
 4. **CodeRabbit** reviews every PR as a blocking gate; resolve its findings (and
    any open conversations) before merge. GitHub Copilot comments are advisory.

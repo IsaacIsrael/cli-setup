@@ -74,7 +74,7 @@ Trunk-based development means incomplete work merges to `main` dormant behind fl
     # Reusable workflows use a leading "_" so they group together and sort
     # above the event orchestrators (GitHub forbids subfolders here).
     ├── _gate-commit-lint.yml    # workflow_call → setup + placeholder (#4: cog check)
-    ├── _gate-branch-lint.yml    # workflow_call → setup + placeholder (#5: branch-name lint, CI backstop)
+    ├── _gate-branch-lint.yml    # workflow_call → setup + just brlint (Git Flow names, CI backstop) (#5, landed)
     ├── _gate-code-lint.yml      # workflow_call → setup + placeholder (#6: ShellCheck)
     ├── _gate-format-check.yml   # workflow_call → setup + just fmt (shfmt + .editorconfig) (#7, landed)
     ├── _gate-test.yml           # workflow_call → setup + placeholder (#8: ShellSpec)
