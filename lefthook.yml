@@ -22,7 +22,14 @@ pre-commit:
       # `just fmt --write` to apply, or let the editor format on save. The glob scopes
       # {staged_files} to shell, and Lefthook skips the command when none match.
       # shfmt settings come from .editorconfig.
+      #
+      # Exclude the ShellSpec *_spec.sh DSL: .editorconfig's `ignore` only applies
+      # when shfmt walks a directory, but this hook passes explicit file paths,
+      # which shfmt would format (flattening the DSL). CI's whole-project `just fmt`
+      # already skips them via .editorconfig.
       glob: "*.{sh,bash}"
+      exclude:
+        - "**/*_spec.sh"
       run: just fmt {staged_files}
 
 commit-msg:
