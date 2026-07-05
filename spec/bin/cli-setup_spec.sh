@@ -65,6 +65,23 @@ Describe 'cli-setup dispatcher'
     End
   End
 
+  Describe 'the global --verbose flag'
+    # --verbose/-v is advertised in the usage as a global flag, so it must be
+    # accepted, not rejected as unknown. It gates output verbosity once the
+    # commands land; with no command to run it just prints the help.
+    It 'accepts --verbose and prints the help when no command follows'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" --verbose
+      The output should include "Usage:"
+      The status should be success
+    End
+
+    It 'accepts the -v alias'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" -v
+      The output should include "Usage:"
+      The status should be success
+    End
+  End
+
   Describe 'unknown input'
     It 'errors and exits non-zero on an unknown command'
       When run script "$CLI_SETUP_ROOT/bin/cli-setup" bogus
