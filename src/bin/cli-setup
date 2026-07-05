@@ -70,6 +70,12 @@ case "${1:-}" in
     print_help
     exit 0
     ;;
+  -v | --verbose)
+    # Accepted as an advertised global flag; the command slices wire it into
+    # output verbosity. With no command to run, fall back to the help.
+    print_help
+    exit 0
+    ;;
   doctor | setup | update | config)
     fail "command '$1' is planned but not implemented yet"
     ;;
