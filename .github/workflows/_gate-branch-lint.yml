@@ -11,6 +11,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-      - name: branch-lint (placeholder)
-        run: |
-          echo "branch-lint placeholder - slice #5: branch-name lint (CI backstop for the Lefthook pre-push hook)"
+      - name: branch-lint
+        # Validates the PR head branch name; brlint.sh reads $GITHUB_HEAD_REF
+        # because the checkout HEAD is a detached merge commit, not the branch.
+        run: just brlint
