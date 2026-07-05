@@ -56,4 +56,18 @@ Describe 'cli-setup dispatcher'
       The status should be success
     End
   End
+
+  Describe 'unknown input'
+    It 'errors and exits non-zero on an unknown command'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" bogus
+      The status should be failure
+      The error should include "unknown command"
+    End
+
+    It 'errors and exits non-zero on an unknown option'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" --nope
+      The status should be failure
+      The error should include "unknown option"
+    End
+  End
 End
