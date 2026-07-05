@@ -24,6 +24,16 @@ binary_next_line = false
 space_redirects = false
 keep_padding = false
 
+# The entrypoint is extensionless, so the [*.{sh,bash}] rules above don't match
+# it — name it explicitly so shfmt applies the same shell settings.
+[src/bin/cli-setup]
+indent_size = 2
+shell_variant = bash
+switch_case_indent = true
+binary_next_line = false
+space_redirects = false
+keep_padding = false
+
 # Markdown uses two trailing spaces for hard line breaks — don't strip them.
 [*.md]
 trim_trailing_whitespace = false
