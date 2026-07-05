@@ -4,4 +4,4 @@
 # ShellSpec harness can exercise the real entrypoint end to end.
 set -euo pipefail
 
-echo "cli-setup"
+echo "broken-on-purpose"
