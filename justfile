@@ -24,6 +24,14 @@ setup:
 lint mode="all":
     @maintenance/lint.sh "$1"
 
+# Validate a branch name against the Git Flow convention (see CONTRIBUTING.md).
+# Pure shell, no Node. Runs via the Lefthook pre-push hook locally and as the
+# branch-lint CI gate (which checks the PR head via $GITHUB_HEAD_REF). With no
+# argument it checks the current branch; pass a name to check one directly, e.g.
+# `just brlint feature/my-work`.
+brlint *args:
+    @maintenance/brlint.sh "$@"
+
 # Report shell files that need formatting with shfmt (settings in .editorconfig).
 # Unlike ShellCheck, shfmt discovers the repo's shell files itself, so no helper
 # script is needed. `just fmt` only reports (prints a diff, non-zero on drift; used

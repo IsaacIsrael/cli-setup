@@ -1,5 +1,13 @@
 # Git hooks managed by Lefthook. Install locally with `lefthook install`
-# (or `just setup`). Later toolchain slices add a `pre-push` branch-name lint.
+# (or `just setup`).
+
+pre-push:
+  commands:
+    branch-lint:
+      # Reject a badly-named branch before it leaves the machine; the CI
+      # branch-lint gate is the unbypassable backstop (ADR 0010). Pure shell,
+      # no Node — checks the current branch against the Git Flow convention.
+      run: just brlint
 
 pre-commit:
   commands:
