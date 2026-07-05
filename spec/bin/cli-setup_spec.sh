@@ -48,4 +48,12 @@ Describe 'cli-setup dispatcher'
       The status should be success
     End
   End
+
+  Describe 'no arguments'
+    It 'prints the help'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup"
+      The output should include "Usage:"
+      The status should be success
+    End
+  End
 End
