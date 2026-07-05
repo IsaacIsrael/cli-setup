@@ -38,9 +38,19 @@ is_shell_file() {
   head -n 1 "$1" | grep -qE '^#!.*/(env +)?(ba)?sh( |$)'
 }
 
+# ShellSpec *_spec.sh files are DSL (Describe/It/End), not standalone shell, so
+# ShellCheck can't meaningfully analyze them (shfmt skips them via .editorconfig).
+# spec_helper.sh is real shell and stays covered.
+is_spec_dsl() {
+  case "$1" in
+    *_spec.sh) return 0 ;;
+  esac
+  return 1
+}
+
 files=()
 while IFS= read -r path; do
-  if [ -n "$path" ] && is_shell_file "$path"; then
+  if [ -n "$path" ] && is_shell_file "$path" && ! is_spec_dsl "$path"; then
     files+=("$path")
   fi
 done < <(candidates "$mode")

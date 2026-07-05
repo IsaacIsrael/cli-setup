@@ -1,5 +1,5 @@
 # cli-setup project recipes. Run `just` (or `just help`) to list them.
-# Later toolchain slices fill in `test` and `docs`.
+# A later toolchain slice fills in `docs`.
 
 # Expose recipe arguments as $1, $2, ... so recipe bodies can stay plain shell
 # (no `{{param}}` interpolation, which trips ShellCheck when editors lint recipes).
@@ -31,6 +31,11 @@ lint mode="all":
 # `just brlint feature/my-work`.
 brlint *args:
     @maintenance/brlint.sh "$@"
+
+# Run the ShellSpec test suite (options in .shellspec, harness in spec/spec_helper.sh).
+# `just test` runs every spec; pass a path to run one, e.g. `just test spec/smoke_spec.sh`.
+test *args:
+    @shellspec "$@"
 
 # Report shell files that need formatting with shfmt (settings in .editorconfig).
 # Unlike ShellCheck, shfmt discovers the repo's shell files itself, so no helper

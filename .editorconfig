@@ -34,6 +34,13 @@ binary_next_line = false
 space_redirects = false
 keep_padding = false
 
+# ShellSpec spec files are DSL (Describe/It/End blocks), not standalone shell:
+# shfmt would flatten their block indentation. Skip them here; spec_helper.sh
+# stays real shell, covered by the [*.{sh,bash}] rules above. `ignore` is a
+# shfmt-specific EditorConfig key (ignored by other tools).
+[*_spec.sh]
+ignore = true
+
 # Markdown uses two trailing spaces for hard line breaks — don't strip them.
 [*.md]
 trim_trailing_whitespace = false
