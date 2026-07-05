@@ -78,12 +78,14 @@ RED:   Write next test → fails
 GREEN: Minimal code to pass → passes
 ```
 
-Rules:
+Rules (MANDATORY — no exceptions):
 
-- One test at a time
-- Only enough code to pass current test
-- Don't anticipate future tests
-- Keep tests focused on observable behavior
+- **Exactly one** failing test before any implementation — run it and watch it fail (RED) before writing code.
+- Only enough code to pass the current test (GREEN); don't anticipate future tests.
+- One behavior per cycle; get it green before starting the next.
+- Keep tests focused on observable behavior.
+
+**STOP** the moment you catch yourself writing a second test while the first is unimplemented, or writing code with no failing test driving it — that is the horizontal slicing forbidden above. Back up and run one full cycle.
 
 ### 4. Refactor
 
@@ -100,6 +102,7 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 ## Checklist Per Cycle
 
 ```
+[ ] Saw the test fail (RED), then pass (GREEN) — one behavior only
 [ ] Test describes behavior, not implementation
 [ ] Test uses public interface only
 [ ] Test would survive internal refactor
