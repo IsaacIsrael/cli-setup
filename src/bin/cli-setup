@@ -23,10 +23,16 @@ resolve_root() {
 }
 
 print_version() {
-  # install.sh materializes <root>/VERSION from the released tag (ADR 0010).
-  line=""
-  IFS= read -r line <"$(resolve_root)/VERSION" || true
-  printf '%s\n' "$line"
+  # install.sh materializes <root>/VERSION from the released tag (ADR 0010); a
+  # dev checkout (or incomplete install) has none, so fall back to a sentinel.
+  version_file=$(resolve_root)/VERSION
+  if [ -f "$version_file" ]; then
+    line=""
+    IFS= read -r line <"$version_file" || true
+    printf '%s\n' "$line"
+  else
+    printf '%s\n' "0.0.0-dev"
+  fi
 }
 
 fail() {

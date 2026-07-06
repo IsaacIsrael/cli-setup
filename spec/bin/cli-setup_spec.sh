@@ -29,6 +29,18 @@ Describe 'cli-setup dispatcher'
     End
   End
 
+  Describe '--version without a VERSION file'
+    # A dev checkout (or an incomplete install) has no VERSION file. --version
+    # still succeeds, printing a dev sentinel instead of a real number.
+    BeforeEach 'rm -f "$CLI_SETUP_ROOT/VERSION"'
+
+    It 'prints a dev sentinel and exits zero'
+      When run script "$CLI_SETUP_ROOT/bin/cli-setup" --version
+      The output should equal "0.0.0-dev"
+      The status should be success
+    End
+  End
+
   Describe '--help / -h'
     It 'prints the usage, planned commands, and global flags'
       When run script "$CLI_SETUP_ROOT/bin/cli-setup" --help
