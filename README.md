@@ -104,8 +104,9 @@ This project uses a native, single-binary toolchain (no Node runtime):
 Bootstrap the toolchain with [Homebrew](https://brew.sh), `brew install just`,
 and `just setup` — see [CONTRIBUTING.md](CONTRIBUTING.md) for the step-by-step.
 `just setup` installs the `Brewfile` tools and wires the git hooks; run `just`
-to list the recipes. The `docs` recipe fills in over the remaining
-infrastructure milestone.
+to list the recipes, or `just run` to invoke the CLI from source (e.g.
+`just run --help`, `just run --version`). The `docs` recipe fills in over the
+remaining infrastructure milestone.
 
 > Compatibility target: **Bash 3.2** (the macOS system Bash). Avoid Bash 4+
 > features such as associative arrays (`declare -A`).

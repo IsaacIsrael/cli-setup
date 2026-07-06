@@ -28,7 +28,8 @@ All artifacts and user-facing output are written in **English**.
    just setup
    ```
 
-Then run `just` to list the available recipes. Prefer `just setup` over
+Then run `just` to list the available recipes — for example, `just run` invokes
+the CLI from source (e.g. `just run --help`). Prefer `just setup` over
 installing the tools individually — the `Brewfile` is the single source of
 truth. The toolchain it installs:
 
