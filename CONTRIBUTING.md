@@ -63,12 +63,16 @@ features such as associative arrays (`declare -A`).
 
 1. Create a short-lived branch using a Git-Flow-style name (see below) — the names are familiar, but the workflow is trunk-based.
 2. Keep changes scoped to one logical unit of work.
-3. Run lint, format, and tests locally before opening a PR:
-   - `just lint` to run ShellCheck
-   - `just fmt` to report formatting drift (or `just fmt --write` to apply)
-   - `just test` to run the ShellSpec suite
-4. Write tests that assert **observable external behavior**, not implementation
-   details.
+3. Write tests that assert **observable external behavior**, not implementation details.
+4. When your change alters user-facing behavior or the CLI's observable contract,
+   **update the docs in the same PR** — where each kind of doc lives is set out in
+   [ADR 0011](.agents/docs/adr/0011-documentation-architecture.md). Internal-only
+   work (refactors, infra, agent tooling) is exempt.
+
+Lint and formatting are enforced for you: a Lefthook `pre-commit` hook runs
+ShellCheck and reports formatting drift on your staged files, and CI re-runs both
+whole-project as the unbypassable backstop. Apply formatting with `just fmt --write`
+(or format on save), and run the full suite any time with `just test`.
 
 ## Commit messages
 

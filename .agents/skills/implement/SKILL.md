@@ -12,6 +12,8 @@ Use /tdd where possible, at pre-agreed seams.
 
 Prefer the repo's `just` recipes over invoking tools directly — run `just` to see what exists (`setup`, `lint`, and `fmt` exist today; `test` and `docs` land over later infrastructure slices, so until a recipe exists, call the tool directly). Bootstrap with `just setup` if the toolchain is not yet installed. Run static analysis regularly, single test files regularly, and the full test suite once at the end.
 
+When the change alters user-facing behavior or the CLI's observable contract, ship its docs as part of done — follow the `writing-docs` skill and the `documentation` rule. Non-user-facing work (internal infra, refactors, agent tooling) is exempt.
+
 Once done, use /code-review to review the work.
 
 Before committing, make the working tree pass the repo's gates: run `just fmt` (formatting) and `just lint` (ShellCheck). Fix anything they flag **in consultation with the user**, never silently — `just fmt --write` applies shfmt; for lint, propose the ShellCheck fixes and confirm before editing — then re-run both until clean.

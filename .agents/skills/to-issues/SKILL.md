@@ -42,6 +42,8 @@ Break the plan into **tracer bullet** issues. Each issue is a thin vertical slic
 
 </vertical-slice-rules>
 
+For a slice that changes user-facing behavior or the CLI's observable contract, include a **documentation acceptance criterion** (docs live per the `documentation` rule). Internal infra, refactors, and agent-tooling slices are exempt.
+
 ### 4. Quiz the user
 
 Present the proposed breakdown as a numbered list. For each slice, show:
