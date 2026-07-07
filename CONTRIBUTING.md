@@ -28,10 +28,9 @@ All artifacts and user-facing output are written in **English**.
    just setup
    ```
 
-Then run `just` to list the available recipes — for example, `just run` invokes
-the CLI from source (e.g. `just run --help`). Prefer `just setup` over
-installing the tools individually — the `Brewfile` is the single source of
-truth. The toolchain it installs:
+That single `just setup` is the whole bootstrap — it installs every `Brewfile`
+tool and wires the git hooks, so you never install them one by one (the
+`Brewfile` is the single source of truth). The toolchain it installs:
 
 | Concern | Tool |
 | --- | --- |
@@ -58,6 +57,37 @@ editor formatting matches `just fmt`.
 
 Compatibility target: **Bash 3.2** (the macOS system Bash). Do not use Bash 4+
 features such as associative arrays (`declare -A`).
+
+## Running the project
+
+Run `just` on its own to list every recipe. To exercise the CLI from source, use
+`just run` — it invokes `src/bin/cli-setup` with whatever arguments you pass, with
+no build step:
+
+```bash
+just run --help
+just run --version
+```
+
+## Project layout
+
+`src/` is the installable payload — everything shipped to `~/.cli-setup`. Tests,
+docs, and repo metadata stay outside it.
+
+```
+src/              # the installable CLI
+  bin/cli-setup   # entrypoint (dispatcher) — symlinked onto PATH
+  lib/            # shared Bash helpers (logging, semver, graph resolution)
+  tools/          # one folder per tool: <id>/{tool.json, tool.sh}
+  profiles/       # one JSON per profile: <id>.json (lists tool ids)
+spec/             # ShellSpec tests
+docs/             # mdBook documentation site source
+install.sh        # curl-able installer (later slice)
+.agents/          # agent workspace (skills, rules, domain docs) — see AGENTS.md
+```
+
+Full detail, including the planned per-layer responsibilities, lives in
+[`.agents/docs/app-layout.md`](.agents/docs/app-layout.md).
 
 ## Making changes
 
