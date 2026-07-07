@@ -116,7 +116,7 @@ form: `commit-lint / commit-lint` (#4), `branch-lint / branch-lint` (#5),
 - **[done by the CI/CD PR]** Description and topics set via `gh`.
 - [x] **Social preview image** — uploaded manually via Settings → General →
       Social preview, using
-      [`assets/social-preview.png`](../../assets/social-preview.png).
+      [`docs/src/assets/hero.png`](../../docs/src/assets/hero.png).
 
 ## 10. Triage labels
 

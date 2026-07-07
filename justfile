@@ -1,5 +1,4 @@
 # cli-setup project recipes. Run `just` (or `just help`) to list them.
-# A later toolchain slice fills in `docs`.
 
 # Expose recipe arguments as $1, $2, ... so recipe bodies can stay plain shell
 # (no `{{param}}` interpolation, which trips ShellCheck when editors lint recipes).
@@ -40,6 +39,13 @@ brlint *args:
 # `just test` runs every spec; pass a path to run one, e.g. `just test spec/bin/cli-setup_spec.sh`.
 test *args:
     @shellspec "$@"
+
+# Build the mdBook documentation site (config in docs/book.toml). Output lands in
+# docs/book (gitignored). `just docs` builds the same book the CI docs gate and
+# the GitHub Pages deploy build. Pass extra args through to mdbook, e.g.
+# `just docs serve` to preview locally with live reload.
+docs *args:
+    @if [ "${1:-}" = "" ]; then mdbook build docs; else mdbook "$@" docs; fi
 
 # Report shell files that need formatting with shfmt (settings in .editorconfig).
 # Unlike ShellCheck, shfmt discovers the repo's shell files itself, so no helper

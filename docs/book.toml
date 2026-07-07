@@ -1,0 +1,30 @@
+[book]
+title = "cli-setup"
+description = "Guided, idempotent macOS dev-environment setup."
+authors = ["Isaac Israel"]
+language = "en"
+src = "src"
+
+[output.html]
+# Dracula is the only theme: "navy" is the theme vehicle whose CSS variables
+# theme/dracula.css overrides with the Dracula palette (matches the brand
+# wordmark in docs/src/assets/hero.png). The theme picker and the sidebar-collapse
+# toggle are hidden in theme/dracula.css; the edit link (no edit-url-template) and
+# the print button ([output.html.print] below) are disabled outright.
+default-theme = "navy"
+preferred-dark-theme = "navy"
+additional-css = ["theme/dracula.css"]
+# theme/branding.js injects the brand marks mdBook has no native option for: the
+# sidebar header (logo + wordmark) and the top-bar wordmark; kept in JS so the
+# theme template stays un-forked.
+additional-js = ["theme/branding.js"]
+git-repository-url = "https://github.com/IsaacIsrael/cli-setup"
+
+[output.html.print]
+enable = false
+
+# Collapse nested subpages by default; a chapter's children reveal only when you
+# are inside that section (mdBook auto-expands the active path).
+[output.html.fold]
+enable = true
+level = 0
