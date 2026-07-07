@@ -64,6 +64,10 @@ The application this repo ships: a native Bash CLI for macOS that diagnoses, ins
 A self-describing, reusable unit that knows how to check for and install one piece of the environment (e.g. Node, Xcode, Watchman).
 _Avoid_: package, dependency, module
 
+**Blocking dependency**:
+A dependency whose failure stops its dependents from running; the dependents are skipped with a stated reason while independent branches continue.
+_Avoid_: hard dependency, required tool
+
 **Profile**:
 A named selection of tools that defines an environment to set up (e.g. `mobile`).
 _Avoid_: preset, template, bundle
@@ -71,6 +75,10 @@ _Avoid_: preset, template, bundle
 **Environment**:
 The set of tools and shell configuration a developer needs to build a given kind of project.
 _Avoid_: setup, stack
+
+**Plan**:
+The ordered set of tools a run will act on, resolved from the profile's dependency graph and shown as a dependency tree before anything is applied.
+_Avoid_: batch, queue, list
 
 **Team config** (a.k.a. **config dist**):
 An optional JSON document, published at a URL, that a team uses to pin tool versions and customize a profile.
@@ -87,6 +95,10 @@ _Avoid_: mismatch, out-of-date
 **Managed block**:
 The single demarcated, reversible region that cli-setup owns inside the user's `~/.zshrc`.
 _Avoid_: shell config, dotfile edits
+
+**Idempotency**:
+The property that re-running setup only touches what is still missing, so a run after a failure resumes with no separate state to manage.
+_Avoid_: retry, rerun
 
 **Doctor**:
 The read-only command that diagnoses the environment and reports status and drift.
