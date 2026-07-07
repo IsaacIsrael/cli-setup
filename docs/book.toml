@@ -28,3 +28,6 @@ enable = false
 [output.html.fold]
 enable = true
 level = 0
+
+# Intentional break to verify the generate-docs CI gate catches a broken docs build.
+broken = = =
