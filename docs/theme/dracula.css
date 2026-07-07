@@ -1,0 +1,233 @@
+/* Dracula palette for the mdBook "navy" theme (the site default).
+ *
+ * mdBook themes are pure CSS custom properties, so we brand the site by
+ * redefining the `.navy` variables rather than forking any template — this
+ * survives mdBook upgrades. Palette: https://draculatheme.com/contribute
+ *   bg #282a36  darker #21222c  selection #44475a  comment #6272a4
+ *   fg #f8f8f2  cyan #8be9fd  green #50fa7b  orange #ffb86c
+ *   pink #ff79c6  purple #bd93f9  red #ff5555  yellow #f1fa8c
+ */
+
+.navy {
+    --bg: #282a36;
+    --fg: #f8f8f2;
+
+    /* Taller top bar so the centered wordmark logo has room to breathe. */
+    --menu-bar-height: 80px;
+
+    --sidebar-bg: #21222c;
+    --sidebar-fg: #f8f8f2;
+    --sidebar-non-existant: #6272a4;
+    --sidebar-active: #bd93f9;
+    --sidebar-spacer: #44475a;
+
+    --scrollbar: #6272a4;
+
+    --icons: #6272a4;
+    --icons-hover: #bd93f9;
+
+    --links: #8be9fd;
+
+    --inline-code-color: #ff79c6;
+
+    --theme-popup-bg: #21222c;
+    --theme-popup-border: #6272a4;
+    --theme-hover: #44475a;
+
+    --quote-bg: #21222c;
+    --quote-border: #6272a4;
+
+    --warning-border: #ffb86c;
+
+    --table-border-color: #44475a;
+    --table-header-bg: #44475a;
+    --table-alternate-bg: #2d2f3b;
+
+    --searchbar-border-color: #6272a4;
+    --searchbar-bg: #21222c;
+    --searchbar-fg: #f8f8f2;
+    --searchbar-shadow-color: #191a21;
+    --searchresults-header-fg: #6272a4;
+    --searchresults-border-color: #44475a;
+    --searchresults-li-bg: #21222c;
+    --search-mark-bg: #ffb86c;
+
+    --color-scheme: dark;
+
+    --footnote-highlight: #bd93f9;
+    --overlay-bg: rgba(40, 42, 54, 0.4);
+
+    --blockquote-note-color: #8be9fd;
+    --blockquote-tip-color: #50fa7b;
+    --blockquote-important-color: #bd93f9;
+    --blockquote-warning-color: #f1fa8c;
+    --blockquote-caution-color: #ff5555;
+
+    --sidebar-header-border-color: #bd93f9;
+}
+
+/* Code blocks: recolor the syntax tokens to Dracula. Under the navy theme
+ * mdBook loads its "tomorrow-night" highlight sheet before this file, so these
+ * `.navy .hljs*` rules win by both order and specificity. */
+.navy .hljs {
+    background: #282a36;
+    color: #f8f8f2;
+}
+
+.navy .hljs-comment,
+.navy .hljs-quote {
+    color: #6272a4;
+}
+
+.navy .hljs-keyword,
+.navy .hljs-selector-tag,
+.navy .hljs-variable,
+.navy .hljs-template-variable,
+.navy .hljs-tag,
+.navy .hljs-name,
+.navy .hljs-regexp,
+.navy .hljs-attr {
+    color: #ff79c6;
+}
+
+.navy .hljs-number,
+.navy .hljs-meta,
+.navy .hljs-built_in,
+.navy .hljs-builtin-name,
+.navy .hljs-literal,
+.navy .hljs-type,
+.navy .hljs-params {
+    color: #bd93f9;
+}
+
+.navy .hljs-string,
+.navy .hljs-symbol,
+.navy .hljs-bullet {
+    color: #f1fa8c;
+}
+
+.navy .hljs-title,
+.navy .hljs-section {
+    color: #50fa7b;
+}
+
+.navy .hljs-link,
+.navy .hljs-selector-id,
+.navy .hljs-selector-class {
+    color: #8be9fd;
+}
+
+/* Lock the site chrome: Dracula is the only theme, so hide the theme picker
+ * everywhere. (The edit and print buttons are disabled in book.toml.) */
+#mdbook-theme-toggle {
+    display: none;
+}
+
+/* Always use the inline bottom prev/next nav (the mobile style). The large fixed
+ * side arrows (.nav-wide-wrapper) span the viewport height and can overlap the
+ * content on wide screens, so drop them at every width in favor of .nav-wrapper. */
+.nav-wide-wrapper {
+    display: none;
+}
+
+.nav-wrapper {
+    display: block;
+}
+
+/* Show only the SUMMARY chapters in the sidebar — hide mdBook's injected
+ * "on this page" heading tree for the active chapter (Available now, Errors, …),
+ * so nested pages like 2.1 / 2.2 are the only sub-entries. */
+.on-this-page {
+    display: none;
+}
+
+/* Render nested subpages as clean section-style labels: drop their numeric
+ * prefix (2.1., 2.2., …) so they read like sections under the parent chapter.
+ * Top-level chapters keep their numbering. */
+.chapter .section strong[aria-hidden="true"] {
+    display: none;
+}
+
+/* Group the nested subpages with the vertical accent the section tree used. */
+.chapter .section {
+    margin-inline-start: 14px;
+    border-inline-start: 4px solid var(--sidebar-header-border-color);
+    padding-inline-start: 10px;
+}
+
+/* Swap mdBook's heavy ❱ fold chevron for a lighter one (rotation still applies). */
+.chapter-fold-toggle div {
+    font-size: 0;
+}
+
+.chapter-fold-toggle div::before {
+    content: "›";
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+/* Branded sidebar header (logo + wordmark) injected by theme/sidebar-header.js.
+ * It lives inside the scrollbox (which is absolutely positioned and fills the
+ * sidebar), so pin it sticky at the top and stretch it over the scrollbox's
+ * 10px padding with negative margins for a full-width bar. */
+.sidebar-header {
+    position: sticky;
+    top: -10px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: -10px -10px 12px;
+    padding: 20px 18px;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid var(--sidebar-spacer);
+    color: var(--sidebar-fg);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1;
+    text-decoration: none;
+}
+
+/* No border-radius: the logo PNG is transparent with a soft glow, so clipping it
+ * to a rounded square turns the glow into an ugly box. Let it sit free. */
+.sidebar-header img {
+    width: 44px;
+    height: 44px;
+}
+
+.sidebar-header:hover {
+    color: var(--sidebar-active);
+    text-decoration: none;
+}
+
+/* Full wordmark in the top menu bar, injected by theme/branding.js in place of
+ * the plain text title. Height-capped so it fits the bar; width scales. */
+.menu-title .menu-title-logo {
+    display: block;
+    margin: 0 auto;
+    height: 60px;
+    width: auto;
+}
+
+/* Sidebar is permanent on desktop: hide the collapse toggle and pin the sidebar
+ * (and the content offset) open regardless of the toggle state, so it can never
+ * be collapsed. Below mdBook's 1080px breakpoint the sidebar is an overlay and
+ * the toggle is the only way to reach the nav, so it stays there. */
+@media only screen and (min-width: 1080px) {
+    #mdbook-sidebar-toggle {
+        display: none;
+    }
+
+    /* Pin the sidebar open even when a stored "hidden" state would collapse it.
+     * mdBook's JS applies an inline `display: none` plus a translate when
+     * collapsed, so override both (inline styles require !important) and keep the
+     * content offset that the visible state applies. */
+    .sidebar {
+        display: block !important;
+        transform: none !important;
+    }
+
+    .page-wrapper {
+        margin-inline-start: calc(var(--sidebar-width) + var(--sidebar-resize-indicator-width)) !important;
+    }
+}
