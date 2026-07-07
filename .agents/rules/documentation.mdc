@@ -1,0 +1,16 @@
+---
+description: Documentation architecture — where docs live and when they are required
+alwaysApply: true
+---
+
+# Documentation
+
+- Each doc has one audience-owned home; define a fact once and link to it, never copy it. See [ADR 0011](../docs/adr/0011-documentation-architecture.md).
+  - `README.md` — GitHub visitor: pitch, status, quickstart, a compact command index table (command + one line + status), links out. No glossary/concept reference and no full command reference — those live on the site.
+  - `CONTRIBUTING.md` — contributor: toolchain, conventions, PR/branch/commit flow, project layout.
+  - `docs/` (mdBook → Pages) — CLI end user: concepts, command reference, guides, roadmap. The canonical user-facing docs.
+  - `.agents/docs/` — maintainers + agents: `CONTEXT.md` (ubiquitous-language source of truth), ADRs, layout, runbooks.
+- `CONTEXT.md` is the authoritative glossary; the site's concepts page is a user-facing rendition that must not contradict it.
+- Ship user-facing docs as part of "done" only when a change alters user-facing behavior or the CLI's observable contract. Internal infra, pure refactors, and agent tooling (skills/rules) are exempt — their docs are the `.agents/` guidance itself.
+- The command reference documents only shipped commands. Move planned commands to the roadmap instead.
+- When authoring or updating a doc, follow the `writing-docs` skill (home selection, per-type template, required-contents checklist).
