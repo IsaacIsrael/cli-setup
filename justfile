@@ -21,6 +21,16 @@ setup:
 run *args:
     @src/bin/cli-setup "$@"
 
+# Build all release artifacts (ADR 0010) — no GitHub side effects, so it is safe
+# to run locally. Resolves the version (feature: cog --auto floored to a minor;
+# hotfix: cog --patch), then writes src/VERSION and src/CHANGELOG.md (the Release
+# body) at the payload root and packages dist/cli-setup-<version>.tar.gz. The
+# release workflow calls this and then only does the `gh release` writes.
+# `just build feature` or `just build hotfix <pr>`; exits non-zero on the feature
+# mode when nothing is releasable (the caller then leaves the draft untouched).
+build mode pr="":
+    @maintenance/build.sh "$@"
+
 # Lint shell files with ShellCheck (config in .shellcheckrc). maintenance/lint.sh finds
 # the repo's shell files (ShellCheck can't discover them itself) and runs shellcheck.
 # `just lint` checks the whole project; `just lint stage` checks the staged files.

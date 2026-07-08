@@ -26,6 +26,7 @@ docs, and repo metadata stay outside it.
 ├── spec/                # ShellSpec tests (not installed)
 ├── docs/                # mdBook documentation site source (not installed)
 ├── maintenance/         # repo tooling scripts (not installed) — e.g. lint.sh, which finds the shell files and runs the ShellCheck gate
+│   └── lib/             # release build blocks composed by `just build` (bump-version, release-notes, package) — ADR 0010
 └── install.sh           # curl-able installer; copies src/ into ~/.cli-setup, vendors gum + jq, symlinks the entrypoint (later slice)
 ```
 
