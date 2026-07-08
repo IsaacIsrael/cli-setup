@@ -2,6 +2,10 @@ name: release
 # Single release workflow. The `draft` input selects the behavior:
 #   draft: true  -> update the accumulating draft Release (feature/bugfix merge)
 #   draft: false -> publish a patch Release now (hotfix/* merge)
+#
+# Tag is the single source of truth (ADR 0010): a release only creates a `vX`
+# tag + GitHub Release, never a commit to `main`. All writes go through `gh`
+# (the default GITHUB_TOKEN), so `persist-credentials: false` is kept.
 on:
   workflow_call:
     inputs:
@@ -15,6 +19,7 @@ on:
         type: string
 permissions:
   contents: write
+  pull-requests: read
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -23,23 +28,48 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+          fetch-tags: true
       - uses: ./.github/actions/setup
-      - name: release (placeholder)
+
+      # Feature/bugfix merge: recompute the accumulating draft from scratch.
+      # `just build` produces every artifact (version, notes, asset) into dist/;
+      # this step only does the `gh release` writes that build deliberately omits.
+      - name: Update the draft release
+        if: ${{ inputs.draft }}
         env:
-          DRAFT: ${{ inputs.draft }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          # No releasable commits since the last tag -> leave the draft untouched.
+          if ! just build feature; then
+            echo "No releasable commits since the last tag; leaving the draft untouched."
+            exit 0
+          fi
+          version="$(cat src/VERSION)"
+          echo "Pending version: $version"
+
+          # Upsert the draft by delete-and-recreate (a draft has no real git tag,
+          # so never --cleanup-tag).
+          old="$(gh release list --json tagName,isDraft --jq '.[] | select(.isDraft == true) | .tagName' | head -n1)"
+          if [ -n "$old" ]; then
+            gh release delete "$old" --yes
+          fi
+          gh release create "v$version" --draft --target "$GITHUB_SHA" \
+            --title "v$version" --notes-file src/CHANGELOG.md "dist/cli-setup-$version.tar.gz"
+
+      # Hotfix merge: force a patch and publish a Release scoped to the PR.
+      - name: Publish the hotfix release
+        if: ${{ !inputs.draft }}
+        env:
+          GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ inputs.pr-number }}
         run: |
-          if [ "$DRAFT" = "true" ]; then
-            echo "release (draft) placeholder - slice #10 (feature/bugfix merge):"
-            echo "  1. advance changelog-base to the latest published feature (minor/major) tag"
-            echo "  2. cog computes the pending minor/major from commits since the last v* tag"
-            echo "  3. update the draft GitHub Release, notes from changelog-base..HEAD"
-            echo "  4. build + stamp the asset with the pending version and attach it to the draft"
-            echo "  no commit to main"
-          else
-            echo "release (hotfix) placeholder - slice #10 (hotfix/* merge, PR #${PR_NUMBER:-?}):"
-            echo "  1. cog forces a patch bump from the latest v* tag"
-            echo "  2. create tag vX at the current main HEAD"
-            echo "  3. build + stamp the asset with the version; publish a Release scoped to the PR"
-            echo "  does NOT advance changelog-base; no commit to main"
-          fi
+          set -euo pipefail
+
+          just build hotfix "$PR_NUMBER"
+          version="$(cat src/VERSION)"
+          echo "Hotfix version: $version"
+
+          gh release create "v$version" --target "$GITHUB_SHA" \
+            --title "v$version" --notes-file src/CHANGELOG.md "dist/cli-setup-$version.tar.gz"
