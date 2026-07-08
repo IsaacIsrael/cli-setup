@@ -15,8 +15,11 @@ mode="${1:?usage: build.sh <feature|hotfix> [pr-number]}"
 pr="${2:-}"
 
 lib="$(cd "$(dirname "$0")/lib" && pwd)"
+root="$(cd "$(dirname "$0")/.." && pwd)"
 
 version="$("$lib/bump-version.sh" "$mode")"
+# macOS vendor payload before packaging (ADR 0012).
+"$root/maintenance/install.sh" --vendor --macos
 # release-notes.sh writes src/CHANGELOG.md and package.sh writes src/VERSION —
 # both at the payload root, so package.sh archives them into the asset.
 "$lib/release-notes.sh" "$mode" "$pr"

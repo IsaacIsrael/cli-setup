@@ -1,5 +1,5 @@
 # Git hooks managed by Lefthook. Install locally with `lefthook install`
-# (or `just setup`).
+# (or `just install`).
 
 pre-push:
   commands:

@@ -7,11 +7,10 @@ Describe 'maintenance/build.sh'
   # in the real working tree (gitignored); the hook drops them so it stays clean.
   build="$SHELLSPEC_PROJECT_ROOT/maintenance/build.sh"
 
-  cleanup() { rm -f "$SHELLSPEC_PROJECT_ROOT/src/VERSION" "$SHELLSPEC_PROJECT_ROOT/src/CHANGELOG.md"; }
-  AfterEach 'cleanup'
+  AfterEach 'clear_path "VERSION"; clear_path "CHANGELOG.md"'
 
   # Build in a throwaway CWD so the dist/ asset lands there, not in the repo.
-  BeforeEach 'cd "$SHELLSPEC_TMPBASE"'
+  BeforeEach "cd \"$SHELLSPEC_TMPBASE\""
 
   Describe 'feature mode'
     Mock cog

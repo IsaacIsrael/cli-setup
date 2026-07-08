@@ -7,8 +7,7 @@ Describe 'maintenance/lib/package.sh'
 
   # package.sh materializes src/VERSION (gitignored) in the working tree; drop it
   # afterwards so the dev checkout is not left dirty.
-  cleanup_version() { rm -f "$SHELLSPEC_PROJECT_ROOT/src/VERSION"; }
-  AfterAll 'cleanup_version'
+  AfterAll 'clear_path "VERSION"; restore_path "vendor"'
 
   Describe 'the built archive'
     out="$SHELLSPEC_TMPBASE/dist"
@@ -30,6 +29,16 @@ Describe 'maintenance/lib/package.sh'
       "$package" 1.2.3 "$out" >/dev/null
       When run tar tzf "$tarball"
       The output should include "cli-setup/bin/cli-setup"
+    End
+
+    It 'bundles vendored runtime binaries when present'
+      mkdir -p "$SHELLSPEC_PROJECT_ROOT/src/vendor"
+      clear_path "vendor/jq"
+      printf '#!/bin/sh\necho vendor-jq\n' >"$SHELLSPEC_PROJECT_ROOT/src/vendor/jq"
+      chmod +x "$SHELLSPEC_PROJECT_ROOT/src/vendor/jq"
+      "$package" 1.2.3 "$out" >/dev/null 2>&1
+      When run tar xzf "$tarball" -O cli-setup/vendor/jq
+      The line 1 of output should equal "#!/bin/sh"
     End
 
     It 'wipes a stale output dir so the build is reproducible'

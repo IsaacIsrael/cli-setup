@@ -24,4 +24,4 @@ runs:
           ${{ runner.os }}-brew-
     - name: Install toolchain (brew bundle)
       shell: bash
-      run: brew bundle --file=Brewfile
+      run: maintenance/install.sh --ci

@@ -3,7 +3,7 @@
   // These are prompts only — nothing is installed automatically.
   "recommendations": [
     // Inline ShellCheck diagnostics. Reuses the shellcheck binary from the
-    // Brewfile toolchain (installed by `just setup`) and this repo's
+    // Brewfile toolchain (installed by `just install`) and this repo's
     // .shellcheckrc, so editor squiggles match `just lint` and CI exactly.
     "timonwong.shellcheck",
     // Honor this repo's .editorconfig (charset, EOL, indentation, final newline)
