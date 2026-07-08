@@ -42,7 +42,7 @@ Remaining deltas (Settings → Rules → Rulesets → edit the ruleset):
       `generate-docs / generate-docs`) are in the required set now, while the
       gates are still placeholders. "Require branches to be up to date before
       merging" is left **off**. Update a context string if a slice renames its
-      job, or merges will block (see step 8).
+      job, or merges will block (see step 7).
 - [x] **Require conversation resolution before merging** — enabled.
 - [x] Explicit **linear-history** rule present (rebase-only already implies it).
 
@@ -51,30 +51,15 @@ Remaining deltas (Settings → Rules → Rulesets → edit the ruleset):
 Releases only create tags and GitHub Releases — no commit or PR touches the
 protected `main`, so **no GitHub App, secret, or "Actions can open PRs" toggle is
 needed** (the workflow's default `GITHUB_TOKEN` suffices). Protect the version
-tags but leave the changelog cursor movable:
+tags:
 
 - [x] Tag ruleset "protect release tags" targeting `v*` is active: deletion and
       force-updates blocked, so a published `vX` is immutable.
-- [x] `changelog-base` is **not** covered — the `_release (draft)` flow must move
-      it forward (see step 5).
+- [x] The feature-notes base is **derived** from these tags — the highest feature
+      tag `vX.Y.0` — so there is no separate `changelog-base` cursor tag to create
+      or keep movable (ADR 0010 amendment).
 
-## 5. Changelog cursor (`changelog-base`)
-
-Feature release notes are generated from `changelog-base..HEAD`, so the cursor
-decouples the accumulating draft from interleaved hotfix `v*` tags. `cog` ignores
-it for versioning because it lacks the `v` prefix (`tag_prefix = "v"`).
-
-- [ ] Create the initial cursor (at the first release point, or now):
-
-  ```bash
-  git tag changelog-base && git push origin changelog-base
-  ```
-
-- [ ] The `_release (draft)` flow self-advances it to the latest published feature
-      (minor/major) `v*` tag on the next draft update (wired in #10); the hotfix
-      flow never moves it. There is no publish workflow to move it at publish time.
-
-## 6. GitHub Pages
+## 5. GitHub Pages
 
 For the docs deploy in `publish.yml` (runs on release; wired for real in #9):
 
@@ -82,7 +67,7 @@ For the docs deploy in `publish.yml` (runs on release; wired for real in #9):
 - [ ] After the first successful deploy, set the repo **homepage** to the Pages
       URL (deferred until #9 publishes).
 
-## 7. CodeRabbit (blocking AI review gate)
+## 6. CodeRabbit (blocking AI review gate)
 
 CodeRabbit is free for public repos and is configured via `.coderabbit.yaml`
 (pre-merge checks in `mode: error`). See ADR 0010 for why it is the chosen gate.
@@ -94,7 +79,7 @@ CodeRabbit is free for public repos and is configured via `.coderabbit.yaml`
 - [x] Added the `CodeRabbit` check to the required status-check set (step 3).
 - [x] GitHub Copilot review left enabled as **advisory** comments only.
 
-## 8. Required checks — ordering
+## 7. Required checks — ordering
 
 Required checks can only reference a check GitHub has seen at least once, so
 there is a chicken-and-egg order:
@@ -109,22 +94,27 @@ reusable workflow, the reported name is the nested `<pr.yml job> / <reusable job
 form: `commit-lint / commit-lint` (#4), `branch-lint / branch-lint` (#5),
 `code-lint / code-lint` (#6), `format-check / format-check` (#7),
 `test / test` (#8), `generate-docs / generate-docs` (#9). Add the exact
-`CodeRabbit` check name observed on a PR once verified (step 7).
+`CodeRabbit` check name observed on a PR once verified (step 6).
 
-## 9. Repository metadata
+## 8. Repository metadata
 
 - **[done by the CI/CD PR]** Description and topics set via `gh`.
 - [x] **Social preview image** — uploaded manually via Settings → General →
       Social preview, using
       [`docs/src/assets/hero.png`](../../docs/src/assets/hero.png).
 
-## 10. Triage labels
+## 9. Triage labels
 
 - **[done by the CI/CD PR]** Created `bug`, `enhancement`, `needs-triage`,
   `needs-info`, `wontfix` (`ready-for-agent`, `ready-for-human`, `prd` already
   existed). See [triage-labels.md](triage-labels.md).
 
-## 11. Cutting a release
+## 10. Cutting a release
+
+The release asset attached to every Release is `cli-setup-<version>.tar.gz`,
+built by `just build` (which stamps the version into a bundled `VERSION` file
+inside a copy of `src/`). The build output (`dist/`) is gitignored, never
+committed.
 
 **Feature release (on demand):**
 
@@ -136,14 +126,14 @@ form: `commit-lint / commit-lint` (#4), `branch-lint / branch-lint` (#5),
   button.
 - Publishing makes GitHub create the tag and flip the draft to published (the
   pre-attached asset carries over); `release: published` → `publish.yml` only
-  deploys the docs. The `changelog-base` cursor is advanced later, on the next
-  draft update. Nothing is committed to `main`.
+  deploys the docs. Nothing is committed to `main`.
 
 **Hotfix release (automatic):**
 
 - Merge a `hotfix/*` PR. The `main.yml` router runs `_release` with `draft: false`:
   `cog` forces a patch, tags `vX`, stamps + uploads the asset, and publishes a
-  Release scoped to that PR. The cursor is not moved. Nothing is committed to `main`.
+  Release scoped to that PR (recording its shipped commit SHAs so the next feature
+  release can de-dup them). Nothing is committed to `main`.
 
 ## Appendix: setup banner (Dracula theme)
 
