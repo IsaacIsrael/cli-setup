@@ -4,36 +4,22 @@ set -euo pipefail
 
 PROG=cli-setup
 
-# Resolve the install root (the parent of this script's bin/ directory),
-# following symlinks so paths hold whether the entrypoint runs in place
-# (src/bin/cli-setup) or via the symlink install.sh puts on PATH
-# (~/.cli-setup/bin/cli-setup). macOS lacks `readlink -f`, so walk the links.
-resolve_root() {
-  source=${BASH_SOURCE[0]}
-  while [ -h "$source" ]; do
-    dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
-    source=$(readlink "$source")
-    case $source in
-      /*) ;;
-      *) source=$dir/$source ;;
-    esac
-  done
-  dir=$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)
-  dirname "$dir"
-}
-
-print_version() {
-  # install.sh materializes <root>/VERSION from the released tag (ADR 0010); a
-  # dev checkout (or incomplete install) has none, so fall back to a sentinel.
-  version_file=$(resolve_root)/VERSION
-  if [ -f "$version_file" ]; then
-    line=""
-    IFS= read -r line <"$version_file" || true
-    printf '%s\n' "$line"
-  else
-    printf '%s\n' "0.0.0-dev"
-  fi
-}
+# Locate boot/ from the entrypoint path ($0, symlink-safe) before bootstrap loads.
+_cli_setup_source=$0
+while [ -h "$_cli_setup_source" ]; do
+  _dir=$(cd -P "$(dirname "$_cli_setup_source")" >/dev/null 2>&1 && pwd)
+  _cli_setup_source=$(readlink "$_cli_setup_source")
+  case $_cli_setup_source in
+    /*) ;;
+    *) _cli_setup_source=$_dir/$_cli_setup_source ;;
+  esac
+done
+_bin_dir=$(cd -P "$(dirname "$_cli_setup_source")" >/dev/null 2>&1 && pwd)
+_root=$(dirname "$_bin_dir")
+# shellcheck source=../boot/bootstrap.sh
+source "$_root/boot/bootstrap.sh"
+source_lib lib/version
+source_lib lib/help
 
 fail() {
   printf '%s: %s\n' "$PROG" "$1" >&2
@@ -41,45 +27,23 @@ fail() {
   exit 2
 }
 
-print_help() {
-  cat <<EOF
-$PROG — guided macOS dev environment setup.
-
-Usage:
-  $PROG [command] [options]
-
-Commands (planned):
-  doctor <profile>    Diagnose what's missing for a profile (read-only).
-  setup <profile>     Install and adjust the missing tools for a profile.
-  update <profile>    Reconcile installed tools to the team config.
-  config <action>     Manage the team config.
-
-Options:
-      --version       Print the installed version and exit.
-  -h, --help          Print this help and exit.
-  -v, --verbose       Show detailed output.
-
-Run with no arguments to print this help.
-EOF
-}
-
 case "${1:-}" in
   "")
-    print_help
+    print_help "$PROG"
     exit 0
     ;;
   --version)
-    print_version
+    installed_version
     exit 0
     ;;
   -h | --help)
-    print_help
+    print_help "$PROG"
     exit 0
     ;;
   -v | --verbose)
     # Accepted as an advertised global flag; the command slices wire it into
     # output verbosity. With no command to run, fall back to the help.
-    print_help
+    print_help "$PROG"
     exit 0
     ;;
   doctor | setup | update | config)

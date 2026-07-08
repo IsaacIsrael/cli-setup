@@ -4,13 +4,16 @@ Describe 'cli-setup dispatcher'
   # Mocks are required yet; the command specs added in later slices will mock
   # brew/curl/rbenv/… on this same entrypoint.
 
+  # Manifest contract: see spec_helper.sh (preserve → stage → restore).
+
   Describe '--version'
     # install.sh materializes <root>/VERSION on the user's machine from the
     # released tag (ADR 0010); a repo checkout has none. CLI_SETUP_ROOT is the
-    # install root the entrypoint resolves, so stage a VERSION there and remove
+    # install root the entrypoint resolves, so stage a VERSION there and restore
     # it after — proving --version reads that file.
-    BeforeEach 'printf "1.2.3\n" > "$CLI_SETUP_ROOT/VERSION"'
-    AfterEach 'rm -f "$CLI_SETUP_ROOT/VERSION"'
+    BeforeEach 'preserve_path "VERSION"'
+    BeforeEach 'stage_file "VERSION" "1.2.3"'
+    AfterEach 'restore_path "VERSION"'
 
     It 'prints the version read from the VERSION file'
       When run script "$CLI_SETUP_ROOT/bin/cli-setup" --version
@@ -32,7 +35,9 @@ Describe 'cli-setup dispatcher'
   Describe '--version without a VERSION file'
     # A dev checkout (or an incomplete install) has no VERSION file. --version
     # still succeeds, printing a dev sentinel instead of a real number.
-    BeforeEach 'rm -f "$CLI_SETUP_ROOT/VERSION"'
+    BeforeEach 'preserve_path "VERSION"'
+    BeforeEach 'clear_path "VERSION"'
+    AfterEach 'restore_path "VERSION"'
 
     It 'prints a dev sentinel and exits zero'
       When run script "$CLI_SETUP_ROOT/bin/cli-setup" --version
