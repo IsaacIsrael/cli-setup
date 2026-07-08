@@ -13,7 +13,7 @@ This ADR is meant to be concrete enough that slices #4–#10 can wire their CI/r
 - **Event orchestrators** are thin — they only compose reusable workflows, never inline job bodies:
   - `pr.yml` (`on: pull_request`) calls every gate.
   - `main.yml` (the **merge router**, `on: pull_request: types: [closed]`, `if: merged`) reads the merged branch prefix: `hotfix/*` → `_release` with `draft: false` (+ `_deploy-docs`); anything else → `_release` with `draft: true`. (All branches target `main`, so a closed-and-merged PR is the single "landed on `main`" event.)
-  - `publish.yml` (`on: release: published`) calls only `_deploy-docs` — the native "Publish release" button already created the tag and published the draft; the asset was pre-attached to the draft and the `changelog-base` cursor self-advances on the next draft update, so nothing else runs at publish.
+  - `publish.yml` (`on: release: published`) calls only `_deploy-docs` — the native "Publish release" button already created the tag and published the draft; the asset was pre-attached to the draft, so nothing else runs at publish.
 - **Docs deploy on release, not on `main`**: `_deploy-docs` runs after a release is cut (from `publish.yml` on a feature publish, and chained after the hotfix `_release` in `main.yml` — a `GITHUB_TOKEN`-created release does not fire `release: published`). So GitHub Pages reflects the *released* version. Deploying on every merge would publish docs for unreleased/feature-flagged work sitting on the trunk. (The `_gate-generate-docs` PR check still verifies the docs *build* on every PR.)
 - **Runners**: `ubuntu-latest` for every gate — no gate needs macOS.
 - **Per-slice convention (fill-in the skeleton)**: the `_gate-*.yml` workflows ship now as valid running placeholders (each step just `echo …`) already wired into `pr.yml`. Each toolchain slice (#4–#9) replaces its placeholder body with the real `just` recipe / command, and only then is that check added to the branch-protection required-checks set.
@@ -46,14 +46,14 @@ Because a release only tags + publishes (no push to `main`), it needs **no privi
 
 Two flows, both handled by the single `_release` workflow, routed by branch prefix on merge (all branches target `main`):
 
-- **Hotfix — automatic** (`main.yml` router → `_release` with `draft: false`): merging a `hotfix/*` PR forces a **patch** (`cog`), tags `vX` at the new `main` HEAD, stamps + uploads the asset, and publishes a Release whose notes are **scoped to that PR**. It does **not** advance the changelog cursor. Then `_deploy-docs` runs.
-- **Feature — on demand** (`main.yml` router → `_release` with `draft: true`): `feature/*` (and `bugfix/*`) merges accumulate into a **draft** Release (notes from `changelog-base..HEAD`), and the draft run **stamps + attaches the asset** built for the pending version. When ready, the maintainer clicks the native **"Publish release"** button; GitHub creates the tag, flips the draft to published (the pre-attached asset carries over), and `publish.yml` deploys the docs. No `_release` run happens at publish time.
+- **Hotfix — automatic** (`main.yml` router → `_release` with `draft: false`): merging a `hotfix/*` PR forces a **patch** (`cog`), tags `vX` at the new `main` HEAD, stamps + uploads the asset, and publishes a Release whose notes are **scoped to that PR** (and records the shipped commit SHAs in a hidden marker so the feature flow can de-dup them). It does **not** touch the accumulating feature draft. Then `_deploy-docs` runs.
+- **Feature — on demand** (`main.yml` router → `_release` with `draft: true`): `feature/*` (and `bugfix/*`) merges accumulate into a **draft** Release (notes from the latest feature tag `vX.Y.0`..HEAD), and the draft run **stamps + attaches the asset** built for the pending version. When ready, the maintainer clicks the native **"Publish release"** button; GitHub creates the tag, flips the draft to published (the pre-attached asset carries over), and `publish.yml` deploys the docs. No `_release` run happens at publish time.
 
-**The `changelog-base` cursor**: a tag *without* the `v` prefix, so `cog` ignores it for versioning (`tag_prefix = "v"`). Feature notes come from `changelog-base..HEAD`, so interleaved hotfix `v*` tags don't make the draft lose accumulated features. Because nothing runs at publish, the cursor **self-advances in the draft flow**: before recomputing the draft, `_release (draft)` moves `changelog-base` up to the latest **published feature (minor/major)** `v*` tag (patch/hotfix tags are skipped). De-dup **by type**: hotfix Releases carry the `fix:` they ship; feature Releases carry `feat:`/breaking plus any `bugfix/*` `fix:` not already shipped by a hotfix.
+**The feature-notes base (no cursor).** Feature notes come from the latest **feature tag** `vX.Y.0`..HEAD. Because a feature release always bumps at least a minor and a hotfix always bumps a patch (see the amendment below), the base is *derivable* — it is the commit of the highest `v*` tag whose patch component is `0` — so no separate cursor tag is maintained. If no feature tag exists yet, notes cover the full history. Interleaved hotfix `vX.Y.Z` tags never move the base, so the draft keeps its accumulated features. De-dup is **by commit SHA**: each hotfix Release records the commit SHAs it shipped in a hidden marker, and the draft recompute drops those commits from its notes, so a `fix:` shipped by a hotfix never reappears in the next feature release.
 
-**Constraints of the no-publish-workflow shape**: the asset is built at draft time with the *pending* version, so the maintainer must not edit the version on the publish form (re-cut instead); and the cursor is only advanced on the next draft run, which is fine because nothing reads it in between.
+**Constraints of the no-publish-workflow shape**: the asset is built at draft time with the *pending* version, so the maintainer must not edit the version on the publish form (re-cut instead).
 
-**Concurrency**: `main.yml` and `publish.yml` share a `concurrency: release` group so tag creation and cursor moves never race; tag creation is atomic, so two releases cannot both mint `vX`.
+**Concurrency**: `main.yml` and `publish.yml` share a `concurrency: release` group so tag creation never races; tag creation is atomic, so two releases cannot both mint `vX`.
 
 ## Release identity
 
@@ -80,7 +80,7 @@ Trunk-based development means incomplete work merges to `main` dormant behind fl
     ├── _gate-test.yml           # workflow_call → setup + placeholder (#8: ShellSpec)
     ├── _gate-generate-docs.yml  # workflow_call → setup + placeholder (#9: mdBook build)
     ├── _deploy-docs.yml         # workflow_call → setup + placeholder (#9: mdBook build + Pages deploy; runs on release)
-    ├── _release.yml             # workflow_call (input: draft) → placeholder (#10: draft update+cursor / hotfix patch+publish)
+    ├── _release.yml             # workflow_call (input: draft) → #10: draft update / hotfix patch+publish
     ├── pr.yml                   # on: pull_request → calls all gates
     ├── main.yml                 # on: pull_request closed (merged) → router: hotfix/* → release(draft:false)+deploy-docs; else → release(draft:true)
     └── publish.yml              # on: release published → calls deploy-docs only
@@ -96,9 +96,9 @@ flowchart TD
     B -- no --> A
     B -- yes --> C["Rebase-merge into main"]
     C -->|"main.yml router (PR closed), concurrency: release"| R{"head.ref prefix?"}
-    R -- "hotfix/*" --> HF["_release (draft:false): cog patch -> tag vX at HEAD<br/>+ Release scoped to the PR (no cursor move)"]
+    R -- "hotfix/*" --> HF["_release (draft:false): cog patch -> tag vX at HEAD<br/>+ Release scoped to the PR (records shipped SHAs)"]
     HF --> J["deploy-docs: publish Pages"]
-    R -- "feature/* or bugfix/*" --> D["_release (draft:true): advance changelog-base to last feature tag<br/>update draft notes from changelog-base..HEAD + attach asset"]
+    R -- "feature/* or bugfix/*" --> D["_release (draft:true): base = highest feature tag vX.Y.0<br/>update draft notes from that base..HEAD + attach asset"]
     D -.->|more work lands| C
     F["Click native 'Publish release' on the draft"] -->|"GitHub tags + publishes; asset carries over"| P["publish.yml (release: published)"]
     P --> J
@@ -123,7 +123,28 @@ flowchart TD
 - Because required checks can only reference checks that exist, there is a chicken-and-egg ordering: a gate must run at least once on a PR before it can be marked required (documented in the setup runbook).
 - The release path needs **no GitHub App, secret, or release PR** — it only creates tags and Releases with the default `GITHUB_TOKEN`. This removes a whole class of manual setup and keeps CI Node-free.
 - The version has exactly **one home (the git tag)** and the changelog exactly one (the GitHub Release), so there is nothing to drift or race. The trade is that `install.sh` must stamp/read the version into the asset (a slice-`#4`/installer responsibility) and readers get the changelog from the Releases (or a derived docs page), not a committed `CHANGELOG.md`.
-- The `changelog-base` cursor is an extra tag to maintain: the `_release (draft)` flow self-advances it to the latest published feature tag on the next draft update (no publish workflow does it), and tag protection must be scoped to `v*` so the cursor tag stays movable (setup runbook).
-- Merging the three release behaviors into one `_release` workflow (input `draft`) removes duplicated boilerplate, but shifts two responsibilities onto the draft flow: it builds/attaches the asset at draft time (so the version must not be edited on the publish form) and it moves the cursor lazily on the next run.
+- The feature-notes base is **derived** from the highest feature tag (`vX.Y.0`) rather than a maintained cursor tag; this removes a moving part (no cursor to create, advance, or exempt from tag protection) but makes the design depend on the feature=minor+/hotfix=patch invariant, which the workflow enforces (see the amendment).
+- Merging the release behaviors into one `_release` workflow (input `draft`) removes duplicated boilerplate, but shifts a responsibility onto the draft flow: it builds/attaches the asset at draft time, so the version must not be edited on the publish form.
 - Hotfix auto-release depends on the `hotfix/*` prefix being used correctly; a fix landed under `feature/*`/`bugfix/*` rides the next feature release instead of publishing immediately (by design).
 - CodeRabbit's directory-scoping means our standards must be maintained in `.coderabbit.yaml` instructions (or a future generated carrier), not only in `.agents/`; this is a small duplication surface to watch.
+
+## Amendment (#10): tag-derived feature base and release mechanics
+
+Implementing #10 settled the release-flow specifics and **superseded the `changelog-base` cursor**. The passages above reflect the final model; this section records the decisions and why.
+
+- **D1 — Feature releases always bump minor+; hotfixes always bump patch.** The draft flow floors `cog bump --auto` to at least a minor, and the hotfix flow forces a patch. So `vX.Y.0` ⟺ feature tag and `vX.Y.Z` (Z>0) ⟺ hotfix tag — an invariant the automation cannot violate, since releases are workflow-only.
+- **D7 — No `changelog-base` cursor (supersedes the original cursor design).** The cursor was, by definition, always a pointer to "the latest feature tag", which D1 makes derivable: the feature-notes base is the commit of the highest `v*` tag with patch component `0` (full history if none). Dropping it removes a moving part — no refs-API writes, no manual bootstrap, no tag-protection carve-out — at the cost of leaning on the D1 invariant, which the workflow guarantees.
+- **D2/D3 — De-dup by commit SHA.** The draft body is recomputed from scratch every merge (idempotent). A hotfix records the commit SHAs it shipped in a hidden marker in its Release body; the draft recompute drops those commits so a hotfix `fix:` never reappears in the next feature release.
+- **D5 — Floating pending version.** The draft's version is recomputed every merge (preview only); the real tag is minted at Publish.
+- **D6 — Draft upsert = delete-and-recreate.** Matches the recompute-from-scratch model; a draft has no real git tag to preserve (GitHub only creates the tag at publish).
+
+Implementation mechanics fixed by #10:
+
+- **De-dup render:** notes use `cog changelog`'s `default` template; lines whose short hash matches (the first 7 chars of) a recorded hotfix SHA are dropped, keeping the published notes readable.
+- **Version calc:** `cog bump --auto --dry-run`; an error / empty result means nothing releasable (the draft is left untouched); a patch-only result is floored with `cog bump --minor`; the `v` prefix is stripped for the asset.
+- **Hotfix marker:** an invisible HTML comment `<!-- cli-setup:shipped-shas <sha> … -->` (full SHAs) appended to the hotfix Release body; de-dup reads it from all published hotfix (patch>0) Releases.
+- **Hotfix notes scope:** `gh pr view <pr> --json commits` → `<oldest-pr-commit>^..HEAD`.
+- **Draft upsert:** delete the `isDraft==true` Release (`gh release delete --yes`, never `--cleanup-tag`), then recreate at `github.sha`.
+- **Asset:** `just build` materializes the plain semver at the payload root (`src/VERSION`, gitignored) and tars a top-level `cli-setup/` (a copy of `src/*`, so `VERSION` — and the `CHANGELOG.md` written alongside it — travel with it), matching how `src/bin/cli-setup` reads `<root>/VERSION` — which also makes `just run --version` reflect the built version in a dev checkout.
+- **Build vs. release split:** `just build <feature|hotfix> [pr]` produces every release artifact — `src/VERSION` (resolved semver, the payload root the workflow reads back), `src/CHANGELOG.md` (the Release body), and the `dist/` asset (which bundles both) — with **no** GitHub side effects, so it runs and is verifiable locally. It composes the three `maintenance/lib/` scripts below. `_release.yml` calls `just build` and then does **only** the `gh release` writes (draft delete-and-recreate, or hotfix publish); the `gh` side effects deliberately never leave the workflow, which keeps them off any locally runnable path.
+- **Testable seams:** the version decision and the notes document live in `maintenance/lib/bump-version.sh` and `maintenance/lib/release-notes.sh` (asset in `maintenance/lib/package.sh`), each unit-tested under ShellSpec with `cog`/`gh`/`git` mocked at the boundary; the fragile logic is verifiable without a real merge.

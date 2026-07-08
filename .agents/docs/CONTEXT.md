@@ -115,3 +115,31 @@ _Avoid_: upgrade, sync
 **Config**:
 The command that manages the team config (`set-team`/`show`/`refresh`).
 _Avoid_: settings
+
+---
+
+# Releases
+
+The vocabulary of the tag-sourced release model (ADR 0010): the git tag is the single source of truth, and a release only creates a tag and a GitHub Release.
+
+## Language
+
+**Release asset**:
+The `.tar.gz` the release build produces and attaches to a GitHub Release — a copy of the installable payload with the version stamped into a bundled `VERSION` file.
+_Avoid_: artifact, bundle, package
+
+**Feature release**:
+A release that bumps at least a minor (`vX.Y.0`), cut on demand by publishing the accumulating draft Release.
+_Avoid_: minor release, main release
+
+**Hotfix release**:
+A patch release (`vX.Y.Z`, Z>0) auto-published when a `hotfix/*` branch merges, with notes scoped to that PR.
+_Avoid_: patch release, emergency fix
+
+**Pending version**:
+The floating version a draft Release previews; recomputed on every merge and only minted as a real tag when the draft is published.
+_Avoid_: next version, draft version
+
+**Shipped-SHAs marker**:
+The hidden HTML comment in a hotfix Release body listing the commit SHAs it published, read by the feature flow to de-dup those commits from the next draft's notes.
+_Avoid_: changelog marker, commit list
