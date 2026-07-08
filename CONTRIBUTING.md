@@ -80,7 +80,8 @@ src/              # the installable CLI
   lib/            # shared Bash helpers (logging, semver, graph resolution)
   tools/          # one folder per tool: <id>/{tool.json, tool.sh}
   profiles/       # one JSON per profile: <id>.json (lists tool ids)
-spec/             # ShellSpec tests
+maintenance/      # dev/release tooling (lint, build, package); lib/ holds the release blocks
+spec/             # ShellSpec tests, mirroring the repo root (spec/src/**, spec/maintenance/**)
 docs/             # mdBook documentation site source
 install.sh        # curl-able installer (later slice)
 .agents/          # agent workspace (skills, rules, domain docs) — see AGENTS.md
@@ -170,7 +171,10 @@ and a GitHub Release, never a commit to `main`:
 - **Hotfix release (automatic):** merging a `hotfix/*` PR auto-publishes a patch
   release (tag + GitHub Release) scoped to that PR.
 
-The changelog lives in the GitHub Releases — there is no committed `CHANGELOG.md`.
+Both flows attach a release asset built by the `just build` recipe, which
+materializes the version and notes at the payload root (`src/VERSION` and
+`src/CHANGELOG.md`, both gitignored) and packages the asset into `dist/`. The
+changelog lives in the GitHub Releases — there is no committed `CHANGELOG.md`.
 
 Repository/maintainer setup (branch protection, tag protection, Pages, required
 checks) is documented in the
