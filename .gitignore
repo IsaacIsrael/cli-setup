@@ -29,6 +29,13 @@ book/
 
 # Tag-sourced releases (ADR 0010): the version lives in the git tag and the
 # changelog in the GitHub Releases — never commit these. Guard against accidents.
+# `just build` materializes src/VERSION + src/CHANGELOG.md at build time.
 /VERSION
+/src/VERSION
 /CHANGELOG.md
+/src/CHANGELOG.md
 /CHANGELOG
+
+# Release asset build output (`just build`) — the asset ships via the GitHub
+# Release, never the repo.
+/dist/
