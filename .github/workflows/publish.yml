@@ -1,8 +1,8 @@
 name: publish
 # A maintainer clicking GitHub's native "Publish release" button flips the
 # accumulated draft to published and creates the tag. The asset was pre-attached
-# to the draft and the changelog-base cursor self-advances on the next draft
-# update, so publish only needs to deploy the docs for the released version.
+# to the draft, and the next feature draft recomputes its notes base from the
+# newly published tag (no cursor), so publish only deploys the docs.
 on:
   release:
     types: [published]
