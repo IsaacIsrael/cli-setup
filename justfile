@@ -46,7 +46,7 @@ brlint *args:
     @maintenance/brlint.sh "$@"
 
 # Run the ShellSpec test suite (options in .shellspec, harness in spec/spec_helper.sh).
-# `just test` runs every spec; pass a path to run one, e.g. `just test spec/bin/cli-setup_spec.sh`.
+# `just test` runs every spec; pass a path to run one, e.g. `just test spec/src/bin/cli-setup_spec.sh`.
 test *args:
     @shellspec "$@"
 
