@@ -6,8 +6,7 @@ Describe 'maintenance/lib/release-notes.sh'
   notes="$SHELLSPEC_PROJECT_ROOT/maintenance/lib/release-notes.sh"
   changelog="$SHELLSPEC_PROJECT_ROOT/src/CHANGELOG.md"
 
-  cleanup() { rm -f "$changelog"; }
-  AfterEach 'cleanup'
+  AfterEach 'clear_path "CHANGELOG.md"'
 
   Describe 'feature mode'
     It 'emits the changelog when nothing has been hotfixed'
@@ -63,6 +62,66 @@ Describe 'maintenance/lib/release-notes.sh'
       When run cat "$changelog"
       The output should include "keep this"
       The output should not include "shipped by a hotfix"
+    End
+
+    It 'adds a Feature enables section from Enables: commit trailers'
+      Mock git
+        case "$1" in
+          tag) : ;;
+          log) printf 'Enables: watchman\n\n' ;;
+        esac
+      End
+      Mock cog
+        echo "#### Features"
+        echo "- (**cli**) ship something - (abc1234) - X"
+      End
+      Mock gh
+        : # no published releases
+      End
+      "$notes" feature
+      When run cat "$changelog"
+      The output should include "#### Feature enables"
+      The output should include "watchman"
+      The output should include "#### Features"
+    End
+
+    It 'omits the Feature enables section when no Enables trailers exist'
+      Mock git
+        case "$1" in
+          tag) : ;;
+          log) printf 'fix(cli): patch something\n\n' ;;
+        esac
+      End
+      Mock cog
+        echo "#### Bug Fixes"
+        echo "- (**cli**) patch something - (abc1234) - X"
+      End
+      Mock gh
+        : # no published releases
+      End
+      "$notes" feature
+      When run cat "$changelog"
+      The output should not include "#### Feature enables"
+      The output should include "#### Bug Fixes"
+    End
+
+    It 'lists each enabled flag once when trailers repeat'
+      Mock git
+        case "$1" in
+          tag) : ;;
+          log) printf 'Enables: watchman\n\nEnables: watchman\n\n' ;;
+        esac
+      End
+      Mock cog
+        echo "#### Features"
+        echo "- (**cli**) ship something - (abc1234) - X"
+      End
+      Mock gh
+        : # no published releases
+      End
+      "$notes" feature
+      When run grep -c '^- watchman$' "$changelog"
+      The output should equal "1"
     End
   End
 

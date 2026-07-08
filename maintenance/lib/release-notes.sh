@@ -18,6 +18,32 @@ target="$root/src/CHANGELOG.md"
 # collides with cog's "#### " section titles) and any blank lines it leaves.
 strip_version_header() { { grep -v '^## ' || true; } | sed '/./,$!d'; }
 
+feature_enables_section() {
+  local base="$1" range flags
+  if [ -n "$base" ]; then
+    range="$base..HEAD"
+  else
+    range="HEAD"
+  fi
+  flags=$(
+    git log "$range" --format='%B' 2>/dev/null | awk '
+      /^Enables:[[:space:]]*/ {
+        flag = $2
+        gsub(/\r/, "", flag)
+        if (flag != "" && !seen[flag]++) {
+          print flag
+        }
+      }
+    ' || true
+  )
+  [ -n "$flags" ] || return 0
+  printf '%s\n' "#### Feature enables"
+  while IFS= read -r flag; do
+    [ -n "$flag" ] || continue
+    printf '%s\n' "- $flag"
+  done <<<"$flags"
+}
+
 case "$mode" in
   feature)
     base="$(git tag -l 'v*' --sort=v:refname | grep -E '^v[0-9]+\.[0-9]+\.0$' | tail -n1 || true)"
@@ -43,6 +69,11 @@ case "$mode" in
       [ -n "$short" ] || continue
       body="$(printf '%s\n' "$body" | grep -v "($short)" || true)"
     done
+
+    enables="$(feature_enables_section "$base")"
+    if [ -n "$enables" ]; then
+      body="$(printf '%s\n%s\n' "$body" "$enables")"
+    fi
 
     printf '%s\n' "$body" | strip_version_header >"$target"
     ;;
