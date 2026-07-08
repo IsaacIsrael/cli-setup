@@ -5,7 +5,7 @@ set up your environment, the conventions we follow, and the pull-request flow.
 
 All artifacts and user-facing output are written in **English**.
 
-## Toolchain setup
+## Toolchain install
 
 `cli-setup` is a native Bash project for macOS with a single-binary toolchain
 (no Node runtime). Bootstrap it in three steps:
@@ -22,15 +22,25 @@ All artifacts and user-facing output are written in **English**.
    brew install just
    ```
 
-3. **Run the bootstrap recipe** — installs the rest of the `Brewfile` tools and wires the git hooks:
+3. **Run the bootstrap recipe** — installs the `Brewfile` toolchain, syncs
+   runtime vendors into `src/vendor/`, and wires the git hooks:
 
    ```bash
-   just setup
+   just install
    ```
 
-That single `just setup` is the whole bootstrap — it installs every `Brewfile`
-tool and wires the git hooks, so you never install them one by one (the
-`Brewfile` is the single source of truth). The toolchain it installs:
+`just install` is the whole bootstrap — it runs `brew bundle` from the
+`Brewfile` (dev tools + runtime vendors), copies the `# --- vendor:` section
+(via `# vendor-meta` lines) into `src/vendor/` (gitignored, like `node_modules`), and wires the git hooks.
+All of this lives in `maintenance/install.sh`:
+
+| Command | What it does |
+| --- | --- |
+| `just install` | Full bootstrap (brew + vendor + hooks) |
+| `just install --update` | Refresh brew + vendor (no hooks) |
+| `just install --vendor` | Sync `src/vendor/` only |
+
+The dev toolchain it installs:
 
 | Concern | Tool |
 | --- | --- |
@@ -77,10 +87,14 @@ docs, and repo metadata stay outside it.
 ```text
 src/              # the installable CLI
   bin/cli-setup   # entrypoint (dispatcher) — symlinked onto PATH
-  lib/            # shared Bash helpers (logging, semver, graph resolution)
+  boot/           # runtime infrastructure (bootstrap, source_lib, resolve_root)
+  lib/            # application helpers (semver, version, flags, help, …)
+  vendor/         # vendored runtime binaries + vendor_exec.sh (gitignored, like node_modules)
+  flags.json      # feature-flag manifest (ADR 0012)
   tools/          # one folder per tool: <id>/{tool.json, tool.sh}
   profiles/       # one JSON per profile: <id>.json (lists tool ids)
-maintenance/      # dev/release tooling (lint, build, package); lib/ holds the release blocks
+maintenance/      # dev/release tooling (install, lint, build, package)
+  lib/            # sync-vendors, bump-version, release-notes, package
 spec/             # ShellSpec tests, mirroring the repo root (spec/src/**, spec/maintenance/**)
 docs/             # mdBook documentation site source
 install.sh        # curl-able installer (later slice)

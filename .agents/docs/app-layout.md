@@ -13,10 +13,22 @@ docs, and repo metadata stay outside it.
 ├── src/                 # the installable CLI — everything shipped to ~/.cli-setup
 │   ├── bin/
 │   │   └── cli-setup    # single entrypoint / command dispatcher (symlinked onto PATH)
-│   ├── lib/             # shared Bash helpers sourced at runtime
+│   ├── boot/            # runtime infrastructure — sourced once at startup (Ruby-style boot)
+│   │   ├── bootstrap.sh # idempotent one-time init; loads source_lib + root
+│   │   ├── source_lib.sh# module loader: boot/, lib/, or <root>/<pkg>/index.sh
+│   │   └── root.sh      # resolve_root — install-root discovery (CLI_SETUP_ROOT override)
+│   ├── lib/             # application helpers loaded via source_lib
+│   │   ├── semver.sh    # awk-based version comparison (no reliable `sort -V` on macOS)
+│   │   ├── version.sh   # installed_version — reads <root>/VERSION or dev sentinel
+│   │   ├── flags.sh     # flag_enabled resolver (ADR 0012)
+│   │   ├── help.sh      # usage text for --help
 │   │   ├── (log)        # tee + verbosity routing over gum (spin/log/table/style)
-│   │   ├── (semver)     # awk-based version comparison (no reliable `sort -V` on macOS)
 │   │   └── (graph)      # dependency-graph / topological-order resolution
+│   ├── vendor/          # vendored runtime binaries (gitignored except vendor_exec.sh)
+│   │   ├── vendor_exec.sh # _vendor_path / vendor_exec plumbing
+│   │   ├── <formula>.sh # generated wrapper per library (e.g. jq.sh defines jq())
+│   │   └── <formula>    # prebuilt binaries (jq, …) — populated by sync-vendors.sh
+│   ├── flags.json       # feature-flag manifest: state + since per flag (ADR 0012)
 │   ├── tools/           # tools as plugins (ADR 0004)
 │   │   └── <id>/
 │   │       ├── tool.json  # metadata: id, dependencies, blocking, version policy, exports, install kind, gui, duration hint
@@ -26,7 +38,12 @@ docs, and repo metadata stay outside it.
 ├── spec/                # ShellSpec tests (not installed) — mirrors the repo root: spec/src/** covers the app, spec/maintenance/** covers repo tooling
 ├── docs/                # mdBook documentation site source (not installed)
 ├── maintenance/         # repo tooling scripts (not installed) — e.g. lint.sh, which finds the shell files and runs the ShellCheck gate
-│   └── lib/             # release build blocks composed by `just build` (bump-version, release-notes, package) — ADR 0010
+│   ├── install.sh       # brew bundle + vendor sync + lefthook (just install)
+│   └── lib/             # release build blocks composed by `just build` — ADR 0010
+│       ├── sync-vendors.sh  # declarative vendor sync from Brewfile vendor-meta
+│       ├── bump-version.sh
+│       ├── release-notes.sh
+│       └── package.sh
 └── install.sh           # curl-able installer; copies src/ into ~/.cli-setup, vendors gum + jq, symlinks the entrypoint (later slice)
 ```
 
@@ -38,8 +55,11 @@ payload), alongside `spec/` and `docs/`.
 
 | Layer | Responsibility |
 | --- | --- |
-| `src/bin/cli-setup` | Parse the subcommand + flags and dispatch to a handler. No business logic. |
-| `src/lib/` | Reusable primitives: logging, semver comparison, graph/topological resolution. Pure where possible. |
+| `src/bin/cli-setup` | Parse the subcommand + flags and dispatch to a handler. Sources `boot/bootstrap.sh` once, then loads libs via `source_lib`. No business logic. |
+| `src/boot/` | Runtime infrastructure: idempotent bootstrap, install-root resolution, module loading. Sourced once from the entrypoint and the test harness. |
+| `src/lib/` | Application helpers: semver, version, flags, help, logging, graph resolution. Loaded on demand via `source_lib`. Pure where possible. |
+| `src/vendor/` | Vendored runtime binaries and per-library wrappers (`jq.sh` → `jq()`, …). Populated by `maintenance/lib/sync-vendors.sh`; gitignored like `node_modules`. |
+| `src/flags.json` | Committed flag manifest (`state`, `since`). Read by `flag_enabled` in `src/lib/flags.sh`. |
 | `src/tools/<id>` | Self-contained knowledge to `check` and `install` one tool. Added without touching the core. |
 | `src/profiles/<id>.json` | Declarative list of tool ids. Built without touching the resolver. |
 
@@ -59,8 +79,9 @@ The application tests target two seams (see the PRD's testing decisions):
    mocked. Assert observable behavior: status/table output, plan preview,
    `--dry-run` applies nothing, exit codes, managed `~/.zshrc` block content,
    log written, idempotent re-run, skip-with-reason on blocking failure.
-2. **Pure functions in `lib`** — semver comparison and dependency-graph /
-   topological resolution, tested directly with no side effects.
+2. **Pure functions and deep modules in `lib` / `boot` / `vendor`** — semver
+   comparison, flag resolution, install-root discovery, and vendor execution,
+   tested directly with external commands (`curl`, `brew`) mocked at the boundary.
 
 Prefer the highest seam: each tool's `check`/`install` is exercised through
 seam 1 with mocked externals.

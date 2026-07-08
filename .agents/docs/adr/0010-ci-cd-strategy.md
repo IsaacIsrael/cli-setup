@@ -6,7 +6,7 @@ This ADR is meant to be concrete enough that slices #4–#10 can wire their CI/r
 
 ## Workflow shape
 
-- **Composite action** `.github/actions/setup/action.yml` — the shared environment block: `brew bundle` from the `Brewfile` (single source of truth, parity with local) plus a Homebrew cache. Every gate calls it as its first step.
+- **Composite action** `.github/actions/setup/action.yml` — the shared environment block: runs `maintenance/install.sh --ci` (`brew bundle` from the `Brewfile` + vendor sync into `src/vendor/`, parity with local `just install --ci`) plus a Homebrew cache. Every gate calls it as its first step. The action is still named `setup` (GitHub Actions convention); the `just` recipe and script are `install` / `maintenance/install.sh`.
 - **Reusable workflows** (`on: workflow_call`), each a single composable unit named by **purpose**, tool-agnostic. Their filenames carry a leading `_` to mark them as *callable* (never triggered directly), distinguishing them from the event orchestrators (`pr.yml`, `main.yml`, `publish.yml`). Two families:
   - _Gates_ (PR quality checks): `_gate-commit-lint`, `_gate-branch-lint`, `_gate-code-lint`, `_gate-format-check`, `_gate-test`, `_gate-generate-docs`.
   - _Deploy/release blocks_ (actions, not gates — they never block a PR): `_deploy-docs` (Pages) and **`_release`** — a single workflow whose **`draft` input selects the behavior**: `draft: true` updates the accumulating draft Release (a `feature/*`/`bugfix/*` merge); `draft: false` publishes a patch Release now (a `hotfix/*` merge). Kept out of the gate namespace precisely because they are not merge gates.
@@ -61,14 +61,14 @@ Two flows, both handled by the single `_release` workflow, routed by branch pref
 
 ## Feature-flag dependency (note only)
 
-Trunk-based development means incomplete work merges to `main` dormant behind flags. To keep `cog` honest, incomplete work lands under **non-releasable commit types** (`chore`/`refactor`/…), and the releasable `feat:`/`fix:` commit that flips a flag on lands only when the feature is ready. The **flag mechanism itself is out of scope here** and is designed in a separate issue/ADR (tracked for milestone "M1: Project infrastructure").
+Trunk-based development means incomplete work merges to `main` dormant behind flags. To keep `cog` honest, incomplete work lands under **non-releasable commit types** (`chore`/`refactor`/…), and the releasable `feat:`/`fix:` commit that flips a flag on lands only when the feature is ready. The flag mechanism is designed in [ADR 0012](0012-feature-flags.md).
 
 ## Target file layout
 
 ```text
 .github/
 ├── actions/
-│   └── setup/action.yml         # composite: placeholder (echo); #4 adds brew bundle + cache
+│   └── setup/action.yml         # composite: maintenance/install.sh --ci + Homebrew cache
 ├── dependabot.yml               # github-actions ecosystem, weekly
 └── workflows/
     # Reusable workflows use a leading "_" so they group together and sort
