@@ -12,10 +12,12 @@ default:
 help:
     @just --list
 
-# Bootstrap the dev toolchain: install the Brewfile tools and wire the git hooks.
-setup:
-    brew bundle
-    lefthook install
+# Bootstrap and maintain the toolchain. See maintenance/install.sh.
+#   just install              full bootstrap (brew + vendor + hooks)
+#   just install --update     refresh brew + vendor
+#   just install --vendor     sync src/vendor/ only
+install *args:
+    @maintenance/install.sh "$@"
 
 # Run the CLI from source (dev entrypoint), e.g. `just run --help` or `just run doctor mobile`.
 run *args:
@@ -48,6 +50,7 @@ brlint *args:
 # Run the ShellSpec test suite (options in .shellspec, harness in spec/spec_helper.sh).
 # `just test` runs every spec; pass a path to run one, e.g. `just test spec/src/bin/cli-setup_spec.sh`.
 test *args:
+    @maintenance/install.sh --vendor
     @shellspec "$@"
 
 # Build the mdBook documentation site (config in docs/book.toml). Output lands in

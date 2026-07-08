@@ -39,3 +39,12 @@ book/
 # Release asset build output (`just build`) — the asset ships via the GitHub
 # Release, never the repo.
 /dist/
+
+# Runtime vendored binaries (like node_modules) — populated by `just install`,
+# shipped inside the release tarball, never committed.
+/src/vendor/*
+!/src/vendor/.gitkeep
+!/src/vendor/vendor_exec.sh
+
+# Kill-switch cache written at runtime by flags.sh (ADR 0012).
+/src/kill-switch.cache.json
