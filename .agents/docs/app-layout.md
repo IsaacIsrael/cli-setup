@@ -23,7 +23,7 @@ docs, and repo metadata stay outside it.
 │   │       └── tool.sh    # exposes `check` and `install`
 │   └── profiles/        # profiles as selections (ADR 0005)
 │       └── <id>.json    # lists tool ids; the core resolves the dependency graph
-├── spec/                # ShellSpec tests (not installed)
+├── spec/                # ShellSpec tests (not installed) — mirrors the repo root: spec/src/** covers the app, spec/maintenance/** covers repo tooling
 ├── docs/                # mdBook documentation site source (not installed)
 ├── maintenance/         # repo tooling scripts (not installed) — e.g. lint.sh, which finds the shell files and runs the ShellCheck gate
 │   └── lib/             # release build blocks composed by `just build` (bump-version, release-notes, package) — ADR 0010
@@ -45,7 +45,14 @@ payload), alongside `spec/` and `docs/`.
 
 ## Test seams
 
-Tests live in `spec/` and target two seams (see the PRD's testing decisions):
+Tests live in `spec/`, which mirrors the repo root one-to-one: a test sits at the
+same path as what it covers, prefixed by `spec/` (e.g. `src/bin/cli-setup` →
+`spec/src/bin/cli-setup_spec.sh`, `maintenance/lib/package.sh` →
+`spec/maintenance/lib/package_spec.sh`). This also draws the boundary that
+matters: `spec/src/**` covers the shipped application, while `spec/maintenance/**`
+covers repo tooling that never ships.
+
+The application tests target two seams (see the PRD's testing decisions):
 
 1. **CLI end-to-end** — invoke `src/bin/cli-setup <subcommand>` with external
    commands (`brew`, `curl`, `rbenv`, `nvm`, `gem`, `sdkmanager`, `xcodes`, …)
