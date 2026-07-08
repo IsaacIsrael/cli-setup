@@ -116,6 +116,26 @@ _Avoid_: upgrade, sync
 The command that manages the team config (`set-team`/`show`/`refresh`).
 _Avoid_: settings
 
+**Feature flag**:
+A named switch that gates incomplete or beta behavior so work can merge to `main` dormant and open by version when ready.
+_Avoid_: toggle, feature toggle
+
+**Flag manifest**:
+The committed JSON map at `src/flags.json` that declares each flag's state and the version it opens at.
+_Avoid_: config file, settings
+
+**Flag state**:
+Whether a flag is `on` or `off` in the manifest; `off` keeps the feature hidden from users until an enable commit flips it.
+_Avoid_: enabled, active
+
+**Kill switch**:
+The maintainer-controlled, off-only remote list that can force live flags off; fetched best-effort and cached at `<install-root>/kill-switch.cache.json` (under `~/.cli-setup` in production).
+_Avoid_: remote config, feature service
+
+**Feature enable**:
+The `feat(<flag>)` commit with an `Enables: <flag>` trailer that turns a flag on in the manifest and records it in release notes.
+_Avoid_: activation commit, flip commit
+
 ---
 
 # Releases

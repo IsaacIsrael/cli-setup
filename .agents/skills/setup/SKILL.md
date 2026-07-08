@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Post-clone bootstrap — wire Cursor rule symlinks, install the dev toolchain (Homebrew + `just setup`), and install the recommended editor extensions.
+description: Post-clone bootstrap — wire Cursor rule symlinks, install the dev toolchain (Homebrew + `just install`), and install the recommended editor extensions.
 disable-model-invocation: true
 ---
 
@@ -60,7 +60,7 @@ Report the linked set. Remind the user that edits belong in `.agents/rules/`, no
 
 ## Part B — Dev toolchain
 
-Install the tools the project builds with. The toolchain is declared in the [`Brewfile`](../../../Brewfile); the `just setup` recipe in the [`justfile`](../../../justfile) installs it and wires the git hooks. Because `just` itself comes from the `Brewfile`, bootstrap its prerequisites first (Homebrew, then `just`), then hand off to the recipe.
+Install the tools the project builds with. The toolchain is declared in the [`Brewfile`](../../../Brewfile); `just install` runs [`maintenance/install.sh`](../../../maintenance/install.sh) to install it, sync `src/vendor/`, and wire the git hooks. Because `just` itself comes from the `Brewfile`, bootstrap its prerequisites first (Homebrew, then `just`), then hand off to the recipe.
 
 ### B1. Ensure Homebrew
 
@@ -78,16 +78,16 @@ if ! command -v brew >/dev/null 2>&1; then
 fi
 ```
 
-### B2. Install `just`, then run `just setup`
+### B2. Install `just`, then run `just install`
 
-`just setup` installs the rest of the `Brewfile` toolchain and wires the git hooks, but it needs `just` present to run:
+`just install` installs the `Brewfile` toolchain, syncs runtime vendors, and wires the git hooks, but it needs `just` present to run:
 
 ```bash
 brew install just
-just setup
+just install
 ```
 
-`just setup` is idempotent (`brew bundle` + `lefthook install` both no-op when already satisfied), so it is safe to re-run.
+`just install` is idempotent (`brew bundle` + vendor sync + `lefthook install` all no-op when already satisfied), so it is safe to re-run.
 
 ### B3. Verify
 
