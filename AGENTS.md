@@ -4,7 +4,7 @@
 
 ### Rules
 
-Binding constraints in `.agents/rules/*.mdc` — git safety, conventional commits, code changes, documentation, GitHub issues, agent workspace.
+Binding constraints in `.agents/rules/*.mdc` — git safety, conventional commits, branch names, code changes, documentation, GitHub issues, agent workspace.
 
 ### Issue tracker
 

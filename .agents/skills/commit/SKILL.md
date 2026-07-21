@@ -10,6 +10,8 @@ Invoking `/commit` is the explicit authorization to rewrite **this branch's own 
 
 Message format and commit granularity follow [conventional-commits.mdc](../../rules/conventional-commits.mdc).
 
+When the plan needs a **new branch** (e.g. the working tree is on `main`), name it per [branch-names.mdc](../../rules/branch-names.mdc) and run `just brlint <name>` before creating it — include that name in the proposal and create the branch only after approval.
+
 ## Absorb
 
 **Absorb** = fold a change into the existing branch-local commit whose logical work it continues or fixes (`git absorb`-style), instead of adding a new commit. Absorbing is a history rewrite, so it is bounded to commits exclusive to this branch.
