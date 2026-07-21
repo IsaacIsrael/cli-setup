@@ -31,8 +31,11 @@ Edit the right-hand column to match whatever vocabulary you actually use in your
 
 These are not triage roles — they tag an issue by what kind of artifact it holds, so the issue tracker can be filtered by type.
 
-| Label | Meaning                                                              |
-| ----- | ------------------------------------------------------------------- |
-| `prd` | The issue is a PRD (product requirements document), not a work item |
+| Label      | Meaning                                                                       |
+| ---------- | ---------------------------------------------------------------------------- |
+| `prd`      | The issue is a PRD (product requirements document), not a work item          |
+| `leftover` | The issue is a per-milestone container for parked tech-debt items, reviewed at end of milestone |
 
-Filter PRDs with `gh issue list --label prd`.
+Filter PRDs with `gh issue list --label prd`; leftover containers with `gh issue list --label leftover`.
+
+Like `prd`, a `leftover` container is a **content type**: it carries no category/state triage roles — it stays out of the issue-triage state machine until its end-of-milestone effort-impact triage.

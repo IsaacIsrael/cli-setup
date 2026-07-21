@@ -12,7 +12,7 @@ Issues live in GitHub Issues (using the `gh` CLI); external PRs are not a triage
 
 ### Triage labels
 
-Triage roles — `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. Content labels — `prd` (tags PRD issues for easy filtering). See `.agents/docs/triage-labels.md`.
+Triage roles — `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. Content labels — `prd` (tags PRD issues), `leftover` (per-milestone tech-debt container). See `.agents/docs/triage-labels.md`.
 
 ### Domain docs
 
