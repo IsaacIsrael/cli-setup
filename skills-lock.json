@@ -66,6 +66,11 @@
       "sourceType": "local",
       "computedHash": "3d273153c7b8f7ebc0e5aff05783499172a9987496c59923e365f775d2a8803b"
     },
+    "leftover": {
+      "source": ".agents/skills/leftover",
+      "sourceType": "local",
+      "computedHash": "f2fbda93e8ff0a8a04ea8e2523fb694a89f3f4bfa3e5bd10c503dacd68461fec"
+    },
     "prototype": {
       "source": ".agents/skills/prototype",
       "sourceType": "local",
@@ -114,7 +119,17 @@
     "triage": {
       "source": ".agents/skills/triage",
       "sourceType": "local",
+      "computedHash": "3682e2168582e8d05a2de1fa1d2c93df4954b64b309444b960ed5741d949ead2"
+    },
+    "triage-issue": {
+      "source": ".agents/skills/triage-issue",
+      "sourceType": "local",
       "computedHash": "d45827c299c021f77b0f146fefa3ee679b13f99e9a2ffdf48e8de2347adeefe1"
+    },
+    "triage-leftover": {
+      "source": ".agents/skills/triage-leftover",
+      "sourceType": "local",
+      "computedHash": "4599fb0cd1d4c63346bccc5e36ea6b84a0885f2b7c9037647ac33711f00f7cc8"
     },
     "verify-acceptance": {
       "source": ".agents/skills/verify-acceptance",

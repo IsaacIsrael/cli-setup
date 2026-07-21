@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Leftover triage — {{MILESTONE}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        securityLevel: "loose",
+        themeVariables: {
+          darkMode: true,
+          background: "#09090b",
+          primaryColor: "#38bdf8",
+          primaryTextColor: "#f4f4f5",
+          primaryBorderColor: "#0ea5e9",
+          secondaryColor: "#fbbf24",
+          tertiaryColor: "#a78bfa",
+          lineColor: "#71717a",
+          textColor: "#f4f4f5",
+          fontFamily: "ui-sans-serif, system-ui, sans-serif",
+          pie1: "#38bdf8",
+          pie2: "#fbbf24",
+          pie3: "#fb7185",
+          pie4: "#a78bfa",
+          pie5: "#34d399",
+          pieTitleTextSize: "16px",
+          pieSectionTextSize: "13px",
+        },
+      });
+    </script>
+    <style>
+      .mermaid {
+        display: flex;
+        justify-content: center;
+      }
+      .matrix {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 0.75rem;
+        min-height: 28rem;
+      }
+      .quad {
+        border-radius: 0.75rem;
+        border: 1px solid;
+        padding: 0.75rem;
+        overflow-y: auto;
+        min-height: 11rem;
+      }
+      .quad-quick {
+        background: #082f49;
+        border-color: #0369a1;
+      }
+      .quad-real {
+        background: #422006;
+        border-color: #b45309;
+      }
+      .quad-nice {
+        background: #052e16;
+        border-color: #047857;
+      }
+      .quad-sink {
+        background: #4c0519;
+        border-color: #be123c;
+      }
+      .item-card {
+        border-radius: 0.5rem;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(9, 9, 11, 0.55);
+        padding: 0.55rem 0.65rem;
+        margin-bottom: 0.45rem;
+      }
+      .item-card:last-child {
+        margin-bottom: 0;
+      }
+      .route-badge {
+        display: inline-block;
+        margin-top: 0.3rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 9999px;
+        padding: 0.1rem 0.45rem;
+      }
+      .badge-ref {
+        background: #0c4a6e;
+        color: #7dd3fc;
+      }
+      .badge-grad {
+        background: #78350f;
+        color: #fcd34d;
+      }
+      .badge-disc {
+        background: #881337;
+        color: #fda4af;
+      }
+      .empty {
+        font-size: 0.875rem;
+        color: #71717a;
+        font-style: italic;
+        padding: 0.25rem;
+      }
+    </style>
+  </head>
+  <body class="bg-zinc-950 text-zinc-100 font-sans">
+    <main class="max-w-5xl mx-auto px-6 py-12 space-y-12">
+      <header class="space-y-4">
+        <div class="flex items-baseline justify-between gap-4 flex-wrap">
+          <h1 class="text-2xl font-semibold tracking-tight">
+            Leftover triage — {{MILESTONE}}
+          </h1>
+          <p class="text-sm text-zinc-400">
+            {{DATE}} · {{ITEM_COUNT}} items · proposal only
+          </p>
+        </div>
+        <dl class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <dt class="text-xs uppercase tracking-wider text-sky-300">
+              ⚡ Quick win
+            </dt>
+            <dd class="mt-1 text-zinc-300">
+              Low effort, high impact → Milestone refinement
+            </dd>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <dt class="text-xs uppercase tracking-wider text-amber-300">
+              🏆 Real win
+            </dt>
+            <dd class="mt-1 text-zinc-300">
+              High effort, high impact → address now / graduate
+            </dd>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <dt class="text-xs uppercase tracking-wider text-emerald-300">
+              🍬 Nice win
+            </dt>
+            <dd class="mt-1 text-zinc-300">
+              Low effort, low impact → refinement if time, else discard
+            </dd>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <dt class="text-xs uppercase tracking-wider text-rose-300">
+              🕳️ Time sink
+            </dt>
+            <dd class="mt-1 text-zinc-300">
+              High effort, low impact → discard
+            </dd>
+          </div>
+        </dl>
+      </header>
+
+      <section id="matrix" class="space-y-4">
+        <h2 class="text-lg font-medium">Effort–impact matrix</h2>
+        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+          <div class="matrix">
+            <div class="quad quad-quick">
+              <p class="text-xs uppercase tracking-wider text-sky-300 mb-2 font-semibold">
+                ⚡ Quick win · low effort / high impact
+              </p>
+              {{QUICK_WIN_CARDS}}
+            </div>
+
+            <div class="quad quad-real">
+              <p class="text-xs uppercase tracking-wider text-amber-300 mb-2 font-semibold">
+                🏆 Real win · high effort / high impact
+              </p>
+              {{REAL_WIN_CARDS}}
+            </div>
+
+            <div class="quad quad-nice">
+              <p class="text-xs uppercase tracking-wider text-emerald-300 mb-2 font-semibold">
+                🍬 Nice win · low effort / low impact
+              </p>
+              {{NICE_WIN_CARDS}}
+            </div>
+
+            <div class="quad quad-sink">
+              <p class="text-xs uppercase tracking-wider text-rose-300 mb-2 font-semibold">
+                🕳️ Time sink · high effort / low impact
+              </p>
+              {{TIME_SINK_CARDS}}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="distribution" class="space-y-4">
+        <h2 class="text-lg font-medium">Proposed routing distribution</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <p class="text-xs uppercase tracking-wider text-zinc-400 mb-2">
+              By route
+            </p>
+            <pre class="mermaid">
+pie showData
+    title Items by proposed destination
+{{PIE_BY_ROUTE}}
+            </pre>
+          </div>
+          <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+            <p class="text-xs uppercase tracking-wider text-zinc-400 mb-2">
+              By quadrant
+            </p>
+            <pre class="mermaid">
+pie showData
+    title Items by quadrant
+{{PIE_BY_QUADRANT}}
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <footer class="text-xs text-zinc-500 border-t border-zinc-800 pt-4">
+        Proposal only — nothing routed until you approve at the confirmation
+        gate. {{FOOTER_NOTE}}
+      </footer>
+    </main>
+  </body>
+</html>

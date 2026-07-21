@@ -34,7 +34,7 @@ A [`leftover`](CONTEXT.md) is one container issue per milestone that parks tech-
   - **🕳️ Time sink** (high effort, low impact) → discard.
   - Effort boundary: **low** ≈ aggregatable into the refinement issue (~1h anchor); **high** deserves its own issue. Impact is **high** if it affects the end user, unblocks future work, or reduces risk.
 - **Dispositions in the body**: routed/graduated items link to the new issue; discarded items are struck through (`~~…~~`) with 🕳️ and kept for dedup. Close the container once every item is destined; **never close the milestone automatically** — only suggest it.
-- **Refinement / graduated issues** follow the normal issue flow after creation (one PR each, standard template). A Milestone refinement issue is born `ready-for-agent` + category; a graduated issue is born `needs-triage`. Do not create an empty refinement issue.
+- **Refinement / graduated issues** follow the normal issue flow after creation (one PR each, standard template). Both are created as **children** of the leftover container (`parentIssueId`) and born `needs-triage` + category. End-of-milestone triage posts **exactly one** decision-report comment per run on the container (disclaimer + routing + screenshot; edit that comment if something is missing — no follow-ups), closes the container with `gh issue close` **without** `--comment`, and strikes unaddressed items. Do not create an empty refinement issue.
 
 ## Pull requests as a triage surface
 
