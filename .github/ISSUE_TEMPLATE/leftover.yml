@@ -1,0 +1,31 @@
+name: Leftover container
+description: A per-milestone bucket for parked tech-debt items, reviewed at end of milestone
+title: "Leftover — "
+labels:
+  - leftover
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A **Leftover** is the per-milestone bucket for tech debt and lateral
+        changes noticed while working — parked here so they derail neither the
+        current issue nor the milestone. Finish the title with the milestone
+        (e.g. `Leftover — M1: Project infrastructure`) and attach that milestone.
+
+        Items accumulate as `##` sections in the body over the milestone. At the
+        end of the milestone, effort-impact triage (`/triage-leftover`) scores and
+        routes each one. Keep each item minimal: a short title, one or two lines
+        of context (what it is, why not now), and a link to where it surfaced.
+  - type: textarea
+    id: items
+    attributes:
+      label: Leftover items
+      description: One `##` section per item. Add more as they surface.
+      value: |
+        ## <short title>
+
+        <one or two lines: what it is, why not now>
+
+        Spotted in #<issue-or-pr>
+    validations:
+      required: false

@@ -1,0 +1,13 @@
+---
+description: Branch names — Git-Flow-style prefixes on trunk-based main
+alwaysApply: true
+---
+
+# Branch Names
+
+When creating or renaming a branch, follow the "Branch names" table in [CONTRIBUTING.md](../../CONTRIBUTING.md) (SSOT). Validate with `just brlint <name>` before creating the branch (or immediately after a rename).
+
+- Prefer `feature/<slug>`, `bugfix/<slug>`, or `hotfix/<slug>` — the prefix drives merge routing.
+- Put the issue number at the start of the slug when there is one (e.g. `feature/42-doctor-command`).
+- Use `support/<slug>` or `release/<slug>` only when the human explicitly asks — the lint accepts them, but they have no special merge routing.
+- Development is trunk-based: branch off `main` and merge back to `main` (see [branch-issue-resolution.md](../docs/branch-issue-resolution.md)).

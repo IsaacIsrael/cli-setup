@@ -16,6 +16,30 @@ _Avoid_: epic, sprint, phase
 A thin vertical slice that cuts through every layer end-to-end and is verifiable on its own.
 _Avoid_: task, ticket, story
 
+**Leftover**:
+A per-milestone container issue (labelled `leftover`) that parks tech-debt items and changes noticed while working, so they derail neither the current issue nor the milestone; reviewed at the end of the milestone. A content type like a PRD — it carries no category/state triage roles.
+_Avoid_: backlog, tech-debt ticket, TODO, nice-to-have
+
+**Leftover item**:
+A single parked entry inside a Leftover — a checklist line (short title, one or two lines of context, and a reference to where it surfaced). The atomic unit that effort-impact triage scores and routes.
+_Avoid_: task, todo, note
+
+**Effort-impact triage**:
+The end-of-milestone review that scores each leftover item on effort (execution time) against impact (value), sorting it into one of four quadrants that decide its fate. Always qualified — never bare "triage", which also means the issue state machine.
+_Avoid_: grooming, prioritization, sweep
+
+**Quick win / Real win / Nice win / Time sink**:
+The four effort-impact quadrants. ⚡ Quick win (low effort, high impact) → Milestone refinement; 🏆 Real win (high effort, high impact) → judgment call, address now or graduate to a later milestone; 🍬 Nice win (low effort, low impact) → address if time allows, else discard; 🕳️ Time sink (high effort, low impact) → discard.
+_Avoid_: priority tiers, buckets
+
+**Milestone refinement**:
+The final tracer-bullet issue of a milestone that aggregates its quick wins (and any chosen nice wins) and executes them before the milestone closes. After creation it is a normal issue.
+_Avoid_: cleanup, polish, wrap-up
+
+**Graduation**:
+Promoting a leftover item — typically a real win — to its own tracer-bullet Issue during effort-impact triage.
+_Avoid_: promotion, spin-off
+
 **Acceptance criterion**:
 A single verifiable, checkbox condition on an issue that defines "done" for that slice.
 _Avoid_: requirement, definition of done, spec item

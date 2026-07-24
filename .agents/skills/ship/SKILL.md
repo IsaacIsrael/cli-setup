@@ -39,3 +39,10 @@ Run `/open-pr` with the pinned base, passing the draft/ready decision from step 
 - **Any criterion unmet** → draft, and hand `/open-pr` the unmet criteria so it surfaces them under "Notes for reviewers", calling out any criterion that **regressed** (was met, now unmet).
 
 Return the PR URL it reports.
+
+### 5. Leftover wrap-up
+
+Two hooks, both suggestions the developer confirms — never automatic:
+
+- **Flush staged leftovers.** If `.scratch/leftover/staged.md` has entries, run [`/leftover`](../leftover/SKILL.md)'s Phase 2 (batch confirmation via the ask modal) so nothing parked this session is lost.
+- **Offer end-of-milestone triage.** If the pinned issue is the **last open non-leftover issue** in its milestone (the milestone is wrapping up) and that milestone has a `leftover` container, suggest running [`/triage-leftover`](../triage-leftover/SKILL.md). Do not run it unprompted, and never close the milestone.

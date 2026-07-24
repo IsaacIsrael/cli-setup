@@ -10,6 +10,8 @@ brew "shellcheck"  # shell static analysis
 brew "shfmt"       # shell formatter
 brew "shellspec"   # BDD test framework for shell
 brew "mdbook"      # documentation site generator
+# leftover triage HTML report → PNG (headless; macOS cask only — skip Linux CI)
+cask "google-chrome" if OS.mac?
 
 # --- vendor: runtime CLI deps, copied to src/vendor/ ---
 # Format: vendor-meta <formula> version=<ver> repo=<org/repo> [tag=...] [asset=...] [url=...] [bin=...]
